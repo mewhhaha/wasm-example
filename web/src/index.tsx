@@ -379,7 +379,7 @@ const Advent2Part1 = () => {
 
         return [js, wasm, after];
       }}
-      label="Advent of Code 1, Part 1"
+      label="Advent of Code 2, Part 1"
       result={result}
     />
   );
@@ -406,7 +406,7 @@ const Advent2Part2 = () => {
 
         return [js, wasm, after];
       }}
-      label="Advent of Code 1, Part 2"
+      label="Advent of Code 2, Part 2"
       result={result}
     />
   );

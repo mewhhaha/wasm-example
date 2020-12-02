@@ -1,7 +1,6 @@
 extern crate wasm_bindgen;
 
-use core::panic;
-
+use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = "arrayTransferSingleTest")]
@@ -63,8 +62,8 @@ pub fn array_reduce_test(array: Box<[f64]>) -> f64 {
     array.into_iter().fold(0.0, |sum, x| sum + x)
 }
 
-#[wasm_bindgen(js_name = "firstAdvent")]
-pub fn first_advent(array: Box<[u32]>) -> u32 {
+#[wasm_bindgen(js_name = "advent1Part1")]
+pub fn advent_1_part_1(array: Box<[u32]>) -> u32 {
     let year = 2020;
     for i in 0..array.len() {
         let x = array[i];
@@ -79,8 +78,8 @@ pub fn first_advent(array: Box<[u32]>) -> u32 {
     1
 }
 
-#[wasm_bindgen(js_name = "secondAdvent")]
-pub fn second_advent(array: Box<[u32]>) -> u32 {
+#[wasm_bindgen(js_name = "advent1Part2")]
+pub fn advent_1_part_2(array: Box<[u32]>) -> u32 {
     let year = 2020;
     for i in 0..array.len() {
         let x = array[i];
@@ -97,4 +96,63 @@ pub fn second_advent(array: Box<[u32]>) -> u32 {
     }
 
     1
+}
+
+#[derive(Display, FromStr)]
+#[display("{min}-{max} {letter}:{password}")]
+struct PasswordLine {
+    min: usize,
+    max: usize,
+    letter: char,
+    password: String,
+}
+
+fn is_valid_password1(
+    PasswordLine {
+        min,
+        max,
+        letter,
+        password,
+    }: PasswordLine,
+) -> bool {
+    let mut sum = 0;
+    password.chars().for_each(|c| {
+        if c == letter {
+            sum += 1;
+        }
+    });
+
+    return sum >= min && sum <= max;
+}
+
+#[wasm_bindgen(js_name = "advent2Part1")]
+pub fn two_first_advent(input: String) -> u32 {
+    input.lines().fold(0, |sum, line| {
+        let password_line = line.parse::<PasswordLine>().unwrap();
+        sum + is_valid_password1(password_line) as u32
+    })
+}
+
+fn is_valid_password2(
+    PasswordLine {
+        min,
+        max,
+        letter,
+        password,
+    }: PasswordLine,
+) -> bool {
+    let chars = password.chars().collect::<Vec<_>>();
+
+    let first = chars[min];
+    let second = chars[max];
+
+    (first == letter || second == letter) && first != second
+}
+
+#[wasm_bindgen(js_name = "advent2Part2")]
+pub fn two_second_advent(input: String) -> u32 {
+    input.lines().fold(0, |sum, line| {
+        let password_line = line.parse::<PasswordLine>().unwrap();
+        sum + is_valid_password2(password_line) as u32
+    })
 }

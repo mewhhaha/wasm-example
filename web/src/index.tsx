@@ -27,7 +27,7 @@ const suspend = <A extends any>(promise: Promise<A>) => {
   };
 };
 
-const wasmCrate = suspend(import("wasm-crate"));
+const wasmCrate = suspend(import("wasm-bundle"));
 
 const formStyle: React.CSSProperties = {
   display: "flex",
@@ -270,8 +270,8 @@ const PrimesTest = () => {
   );
 };
 
-const FirstAdvent = () => {
-  const { firstAdvent } = wasmCrate();
+const Advent1Part1 = () => {
+  const { advent1Part1 } = wasmCrate();
   const [result, setResult] = useState<null | string>(null);
   return (
     <Test
@@ -296,7 +296,7 @@ const FirstAdvent = () => {
         };
 
         const wasm = () => {
-          product = firstAdvent(new Uint32Array(numbers));
+          product = advent1Part1(new Uint32Array(numbers));
         };
 
         const after = () => {
@@ -305,14 +305,14 @@ const FirstAdvent = () => {
 
         return [js, wasm, after];
       }}
-      label="First advent test"
+      label="Advent of Code 1, Part 1"
       result={result}
     />
   );
 };
 
-const SecondAdvent = () => {
-  const { secondAdvent } = wasmCrate();
+const Advent1Part2 = () => {
+  const { advent1Part2 } = wasmCrate();
   const [result, setResult] = useState<null | string>(null);
   return (
     <Test
@@ -343,7 +343,7 @@ const SecondAdvent = () => {
         };
 
         const wasm = () => {
-          product = secondAdvent(new Uint32Array(numbers));
+          product = advent1Part2(new Uint32Array(numbers));
         };
 
         const after = () => {
@@ -352,7 +352,61 @@ const SecondAdvent = () => {
 
         return [js, wasm, after];
       }}
-      label="Second advent test"
+      label="Advent of Code 1, Part 2"
+      result={result}
+    />
+  );
+};
+
+const Advent2Part1 = () => {
+  const { advent2Part1 } = wasmCrate();
+  const [result, setResult] = useState<null | string>(null);
+  return (
+    <Test
+      inputType="textarea"
+      func={(input) => {
+        let numberOfPasswords: number = 0;
+
+        const js = () => {};
+
+        const wasm = () => {
+          numberOfPasswords = advent2Part1(input);
+        };
+
+        const after = () => {
+          setResult(numberOfPasswords.toString());
+        };
+
+        return [js, wasm, after];
+      }}
+      label="Advent of Code 1, Part 1"
+      result={result}
+    />
+  );
+};
+
+const Advent2Part2 = () => {
+  const { advent2Part2 } = wasmCrate();
+  const [result, setResult] = useState<null | string>(null);
+  return (
+    <Test
+      inputType="textarea"
+      func={(input) => {
+        let numberOfPasswords: number = 0;
+
+        const js = () => {};
+
+        const wasm = () => {
+          numberOfPasswords = advent2Part2(input);
+        };
+
+        const after = () => {
+          setResult(numberOfPasswords.toString());
+        };
+
+        return [js, wasm, after];
+      }}
+      label="Advent of Code 1, Part 2"
       result={result}
     />
   );
@@ -371,8 +425,10 @@ const App: React.FC = () => {
       <ReduceTest />
       <MapFilterTest />
       <PrimesTest />
-      <FirstAdvent />
-      <SecondAdvent />
+      <Advent1Part1 />
+      <Advent1Part2 />
+      <Advent2Part1 />
+      <Advent2Part2 />
     </div>
   );
 };

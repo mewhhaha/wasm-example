@@ -1,0 +1,13 @@
+{
+  "name": "wasm-crate",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "wasm-pack build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "wasm-pack": "^0.9.1"
+  }
+}

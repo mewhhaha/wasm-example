@@ -91,8 +91,8 @@ export const Advent2Part2 = () => {
             letter: string;
             password: string;
           }) => {
-            const first = password.charAt(min);
-            const second = password.charAt(max);
+            const first = password.charAt(min - 1);
+            const second = password.charAt(max - 1);
             return (first === letter || second === letter) && first !== second;
           };
 

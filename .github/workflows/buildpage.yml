@@ -31,9 +31,7 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
 
       - name: Build docs
-        run: |
-          echo $CWD
-          pnpm build
+        run: ls -al
 
       - uses: EndBug/add-and-commit@v5
         with:

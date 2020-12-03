@@ -11,6 +11,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Checkout docs
+        uses: actions/checkout@v2
+        with:
+          ref: docs 
+          path: docs
+
       - name: Cache pnpm
         uses: actions/cache@v2
         with:
@@ -44,14 +50,10 @@ jobs:
       - name: Build docs
         run: pnpm run build
 
-      - name: Checkout docs
-        uses: actions/checkout@v2
-        with:
-          ref: docs 
-
       - name: Push docs
         run: |
-          git add docs
+          cd docs
+          git add .
           git commit -m "[CI] Build docs"
           git push
         env:

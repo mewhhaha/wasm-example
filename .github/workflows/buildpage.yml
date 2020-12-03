@@ -52,9 +52,5 @@ jobs:
           git config --local user.name "GitHub Action"
           git add docs
           git commit -m "[CI] Build docs"
-        with:
-          branch: docs
-          cwd: './docs'
-          message: "[CI] Build docs"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

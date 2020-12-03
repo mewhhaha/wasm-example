@@ -46,14 +46,19 @@ jobs:
 
       - name: Push docs
         run: |
-          git add docs
+          mv docs temp
+
+          git config pull.rebase false
+          git pull
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -m "[CI] Build docs"
+          
+          rm -rf docs
+          mv temp docs
 
-          git pull
           git switch docs 
-          git merge master
+          git add docs
+          git commit -m "[CI] Build docs"
           git push
           
         env:

@@ -46,13 +46,15 @@ jobs:
 
       - name: Push docs
         run: |
-          git pull
-          git stash
-          git switch docs
+          git add docs
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git stash pop
-          git add docs
           git commit -m "[CI] Build docs"
+
+          git pull
+          git switch docs 
+          git merge master
+          git push
+          
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

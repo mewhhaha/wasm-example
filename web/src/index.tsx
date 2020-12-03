@@ -10,8 +10,9 @@ import {
   Advent1Part2,
   Advent2Part1,
   Advent2Part2,
+  Advent3Part1,
+  Advent3Part2,
 } from "./components";
-import { Advent3Part1, Advent3Part2 } from "./components/Advent3";
 
 const appStyle: React.CSSProperties = {
   display: "flex",

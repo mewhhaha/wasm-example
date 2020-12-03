@@ -1,3 +1,4 @@
 packages:
   - web
   - wasm/pkg
+  - wasm

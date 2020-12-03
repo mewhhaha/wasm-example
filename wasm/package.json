@@ -3,11 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "wasm-pack build"
+    "build": "wasm-pack build --release"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "wasm-pack": "^0.9.1"
-  }
+  "devDependencies": {}
 }

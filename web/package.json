@@ -16,6 +16,7 @@
     "wasm-bundle": "workspace:*"
   },
   "devDependencies": {
+    "wasm-crate": "workspace:*",
     "@babel/core": "^7.12.8",
     "@babel/preset-react": "^7.12.7",
     "@types/react": "^17.0.0",

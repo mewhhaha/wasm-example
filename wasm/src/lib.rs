@@ -99,60 +99,61 @@ pub fn advent_1_part_2(array: Box<[u32]>) -> u32 {
 }
 
 #[derive(Display, FromStr)]
-#[display("{min}-{max} {letter}:{password}")]
+#[display("{low}-{high} {letter}:{password}")]
 struct PasswordLine {
-    min: usize,
-    max: usize,
+    low: usize,
+    high: usize,
     letter: char,
     password: String,
 }
 
 fn is_valid_password1(
     PasswordLine {
-        min,
-        max,
+        low,
+        high,
         letter,
         password,
     }: PasswordLine,
 ) -> bool {
-    let mut sum = 0;
-    password.chars().for_each(|c| {
-        if c == letter {
-            sum += 1;
-        }
-    });
+    let n = password.chars().filter(|c| *c == letter).count();
 
-    return sum >= min && sum <= max;
+    return n >= low && n <= high;
 }
 
 #[wasm_bindgen(js_name = "advent2Part1")]
-pub fn two_first_advent(input: String) -> u32 {
-    input.lines().fold(0, |sum, line| {
-        let password_line = line.parse::<PasswordLine>().unwrap();
-        sum + is_valid_password1(password_line) as u32
-    })
+pub fn two_first_advent(input: String) -> usize {
+    input
+        .lines()
+        .filter(|line| {
+            let password_line = line.parse::<PasswordLine>().expect("!");
+            is_valid_password1(password_line)
+        })
+        .count()
 }
 
 fn is_valid_password2(
     PasswordLine {
-        min,
-        max,
+        low,
+        high,
         letter,
         password,
     }: PasswordLine,
 ) -> bool {
     let chars = password.chars().collect::<Vec<_>>();
 
-    let first = chars[min];
-    let second = chars[max];
+    let first = chars[low];
+    let second = chars[high];
 
     (first == letter || second == letter) && first != second
 }
 
 #[wasm_bindgen(js_name = "advent2Part2")]
-pub fn two_second_advent(input: String) -> u32 {
-    input.lines().fold(0, |sum, line| {
-        let password_line = line.parse::<PasswordLine>().unwrap();
-        sum + is_valid_password2(password_line) as u32
-    })
+pub fn two_second_advent(input: String) -> usize {
+    input
+        .lines()
+        .filter(|line| {
+            let password_line = line.parse::<PasswordLine>().expect("!");
+            is_valid_password2(password_line)
+        })
+        .count()
 }

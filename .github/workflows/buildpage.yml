@@ -50,11 +50,10 @@ jobs:
       - name: Build docs
         run: pnpm run build
 
-      - name: Push docs
-        run: |
-          cd docs
-          git add .
-          git commit -m "[CI] Build docs"
-          git push
+      - uses: EndBug/add-and-commit@v5
+        with:
+          branch: docs
+          cwd: './docs'
+          message: "[CI] Build docs"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

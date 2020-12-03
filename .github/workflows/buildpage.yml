@@ -11,12 +11,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Checkout docs
-        uses: actions/checkout@v2
-        with:
-          ref: docs 
-          path: docs
-
       - name: Cache pnpm
         uses: actions/cache@v2
         with:

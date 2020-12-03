@@ -47,9 +47,11 @@ jobs:
       - name: Push docs
         run: |
           git pull
+          git stash
           git switch docs
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git stash pop
           git add docs
           git commit -m "[CI] Build docs"
         env:

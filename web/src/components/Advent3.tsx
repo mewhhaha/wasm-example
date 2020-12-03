@@ -8,6 +8,7 @@ export const Advent3Part1 = () => {
   return (
     <Test
       inputType="textarea"
+      placeholder="Puzzle input"
       func={(input) => {
         let trees: number;
 
@@ -15,10 +16,12 @@ export const Advent3Part1 = () => {
           const carta = input.split(/\r?\n/);
 
           const width = carta[0].length;
+          const height = carta.length;
+
           const slope = [3, 1];
           const coordinates = [0, 0];
           let trees = 0;
-          while (coordinates[1] < carta.length) {
+          while (coordinates[1] < height) {
             if (carta[coordinates[0] % width][coordinates[1]] === "#") {
               trees++;
             }
@@ -52,10 +55,39 @@ export const Advent3Part2 = () => {
   return (
     <Test
       inputType="textarea"
+      placeholder="Puzzle input"
       func={(input) => {
         let trees: number;
 
-        const js = null;
+        const js = () => {
+          const carta = input.split(/\r?\n/);
+          const count = (slope: [number, number]) => {
+            const width = carta[0].length;
+            const height = carta.length;
+            const coordinates = [0, 0];
+            let trees = 0;
+            while (coordinates[1] < height) {
+              if (carta[coordinates[0] % width][coordinates[1]] === "#") {
+                trees++;
+              }
+
+              coordinates[0] += slope[0];
+              coordinates[1] += slope[1];
+            }
+
+            return trees;
+          };
+
+          const slopes: [number, number][] = [
+            [1, 1],
+            [3, 1],
+            [5, 1],
+            [7, 1],
+            [1, 2],
+          ];
+
+          return slopes.reduce((product, slope) => product * count(slope), 1);
+        };
 
         const wasm = () => {
           trees = advent3Part2(input);

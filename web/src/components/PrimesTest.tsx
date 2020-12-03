@@ -23,6 +23,7 @@ export const PrimesTest = () => {
   return (
     <Test
       inputType="number"
+      placeholder="Nth prime"
       func={(input) => {
         const nthPrime = Number.parseInt(input);
 

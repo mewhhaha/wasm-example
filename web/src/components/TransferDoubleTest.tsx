@@ -8,6 +8,7 @@ export const TransferDoubleTest = () => {
   return (
     <Test
       inputType="number"
+      placeholder="Array size"
       func={(input) => {
         const size = Number.parseInt(input);
         const array = [...new Array(size).keys()];

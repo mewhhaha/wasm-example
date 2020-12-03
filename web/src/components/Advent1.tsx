@@ -8,6 +8,7 @@ export const Advent1Part1 = () => {
   return (
     <Test
       inputType="textarea"
+      placeholder="Puzzle input"
       func={(input) => {
         const numbers = input.split(/\r?\n/).map((x) => {
           return Number.parseInt(x);
@@ -49,6 +50,7 @@ export const Advent1Part2 = () => {
   return (
     <Test
       inputType="textarea"
+      placeholder="Puzzle input"
       func={(input) => {
         const numbers = input
           .split(/\r?\n/)

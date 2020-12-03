@@ -23,6 +23,7 @@ type TestProps = {
   func: (input: string) => [(() => void) | null, () => void, (() => void)?];
   result?: null | string;
   inputType: "number" | "text" | "textarea";
+  placeholder?: string;
 };
 
 export const Test: React.FC<TestProps> = ({
@@ -30,8 +31,9 @@ export const Test: React.FC<TestProps> = ({
   func: before,
   inputType,
   result,
+  placeholder,
 }) => {
-  const [input, setInput] = useState(inputType === "number" ? "0" : "");
+  const [input, setInput] = useState("");
   const [time, setTime] = useState<null | [number, number]>(null);
 
   const run = () => {
@@ -53,11 +55,13 @@ export const Test: React.FC<TestProps> = ({
       {inputType === "textarea" ? (
         <textarea
           value={input}
+          placeholder={placeholder}
           onChange={(event) => setInput(event.target.value)}
         />
       ) : (
         <input
           type={inputType}
+          placeholder={placeholder}
           value={input}
           onChange={(event) => setInput(event.currentTarget.value)}
         />

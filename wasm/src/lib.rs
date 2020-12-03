@@ -159,10 +159,11 @@ pub fn advent_2_part_2(input: String) -> usize {
 }
 
 fn count_trees_on_slope(carta: &Vec<Vec<char>>, slope: (usize, usize)) -> u32 {
+    let height = carta.len();
     let width = carta[0].len();
     let mut coordinates = (0, 0);
     let mut trees = 0;
-    while coordinates.1 < carta.len() {
+    while coordinates.1 < height {
         if carta[coordinates.1][coordinates.0 % width] == '#' {
             trees += 1
         }

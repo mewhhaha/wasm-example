@@ -8,6 +8,7 @@ export const Advent2Part1 = () => {
   return (
     <Test
       inputType="textarea"
+      placeholder="Puzzle input"
       func={(input) => {
         let numberOfPasswords: number = 0;
 
@@ -76,6 +77,7 @@ export const Advent2Part2 = () => {
   return (
     <Test
       inputType="textarea"
+      placeholder="Puzzle input"
       func={(input) => {
         let numberOfPasswords: number = 0;
 

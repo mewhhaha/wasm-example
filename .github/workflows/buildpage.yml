@@ -1,0 +1,35 @@
+name: Github Page
+# Run this workflow every time a new commit pushed to your repository
+on: push
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  build-page:
+    # Name the Job
+    name: Build page
+    # Set the type of machine to run on
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+      - uses: pnpm/action-setup@v1.2.1
+        with:
+          version: 4.11.1
+      - uses: jetli/wasm-pack-action@v0.3.0
+
+      - name: Build docs
+        run: pnpm build
+
+      - uses: EndBug/add-and-commit@v5
+        with:
+          add: 'docs'
+          message: 'Build docs'
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

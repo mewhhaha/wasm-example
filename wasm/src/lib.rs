@@ -121,7 +121,7 @@ fn is_valid_password1(
 }
 
 #[wasm_bindgen(js_name = "advent2Part1")]
-pub fn two_first_advent(input: String) -> usize {
+pub fn advent_2_part_1(input: String) -> usize {
     input
         .lines()
         .filter(|line| {
@@ -148,7 +148,7 @@ fn is_valid_password2(
 }
 
 #[wasm_bindgen(js_name = "advent2Part2")]
-pub fn two_second_advent(input: String) -> usize {
+pub fn advent_2_part_2(input: String) -> usize {
     input
         .lines()
         .filter(|line| {
@@ -156,4 +156,44 @@ pub fn two_second_advent(input: String) -> usize {
             is_valid_password2(password_line)
         })
         .count()
+}
+
+fn count_trees_on_slope(carta: &Vec<Vec<char>>, slope: (usize, usize)) -> u32 {
+    let width = carta[0].len();
+    let mut coordinates = (0, 0);
+    let mut trees = 0;
+    while coordinates.1 < carta.len() {
+        if carta[coordinates.1][coordinates.0 % width] == '#' {
+            trees += 1
+        }
+        coordinates.0 += slope.0;
+        coordinates.1 += slope.1;
+    }
+
+    trees
+}
+
+#[wasm_bindgen(js_name = "advent3Part1")]
+pub fn advent_3_part_1(input: String) -> u32 {
+    let carta = input
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect::<Vec<Vec<char>>>();
+
+    let slope = (3, 1);
+    count_trees_on_slope(&carta, slope)
+}
+
+#[wasm_bindgen(js_name = "advent3Part2")]
+pub fn advent_3_part_2(input: String) -> u32 {
+    let carta = input
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect::<Vec<Vec<char>>>();
+
+    let slopes = vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
+
+    slopes.into_iter().fold(1, |product, slope| {
+        product * count_trees_on_slope(&carta, slope)
+    })
 }

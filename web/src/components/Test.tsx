@@ -20,7 +20,7 @@ const benchmark = (f: () => void): number => {
 
 type TestProps = {
   label: string;
-  func: (input: string) => [() => void, () => void, (() => void)?];
+  func: (input: string) => [(() => void) | null, () => void, (() => void)?];
   result?: null | string;
   inputType: "number" | "text" | "textarea";
 };
@@ -36,7 +36,7 @@ export const Test: React.FC<TestProps> = ({
 
   const run = () => {
     const [js, wasm, after] = before(input);
-    const jsTime = benchmark(js);
+    const jsTime = js !== null ? benchmark(js) : -1;
     const wasmTime = benchmark(wasm);
     after?.();
     setTime([jsTime, wasmTime]);
@@ -65,7 +65,7 @@ export const Test: React.FC<TestProps> = ({
       <button type="button" onClick={run}>
         run
       </button>
-      <span>{time !== null && `${time[0]}ms (js)`}</span>
+      <span>{time !== null && time[0] >= 0 && `${time[0]}ms (js)`}</span>
       <span>{time !== null && `${time[1]}ms (wasm)`}</span>
       <span>{result !== null && result}</span>
     </form>

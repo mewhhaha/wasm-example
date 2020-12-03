@@ -36,11 +36,11 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: latest
+          node-version: '14'
 
       - uses: pnpm/action-setup@v1.2.1
         with:
-          version: latest
+          version: 5.13.5
           run_install: true
 
       - uses: jetli/wasm-pack-action@v0.3.0

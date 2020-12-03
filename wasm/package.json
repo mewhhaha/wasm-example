@@ -5,6 +5,14 @@
   "scripts": {
     "build": "wasm-pack build --release"
   },
+  "files": [
+    "pkg/wasm_bundle_bg.wasm",
+    "pkg/wasm_bundle.js",
+    "pkg/wasm_bundle.d.ts"
+  ],
+  "module": "pkg/wasm_bundle.js",
+  "types": "pkg/wasm_bundle.d.ts",
+  "sideEffects": "false",
   "author": "",
   "license": "ISC",
   "devDependencies": {}

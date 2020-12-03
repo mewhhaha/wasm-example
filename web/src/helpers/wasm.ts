@@ -24,4 +24,4 @@ const suspend = <A extends any>(promise: Promise<A>) => {
   };
 };
 
-export const wasmCrate = suspend(import("wasm-bundle"));
+export const wasmCrate = suspend(import("wasm-crate"));

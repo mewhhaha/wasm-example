@@ -50,7 +50,14 @@ jobs:
       - name: Build docs
         run: pnpm run build
 
-      - uses: EndBug/add-and-commit@v5
+      - name: Push docs
+        run: |
+          git pull
+          git switch docs
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs
+          git commit -m "[CI] Build docs"
         with:
           branch: docs
           cwd: './docs'

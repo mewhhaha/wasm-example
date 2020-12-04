@@ -1,16 +1,25 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+import path from "path";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import ESBuildPlugin from "esbuild-webpack-plugin";
+import webpack from "webpack";
 
-module.exports = {
+const docs = path.resolve(__dirname, "../docs");
+
+const config: webpack.Configuration = {
   mode: "production",
   entry: "./src/index.tsx",
   output: {
     filename: "index.js",
-    path: path.resolve(__dirname, "../docs"),
+    path: docs,
   },
   module: {
     rules: [
+      {
+        test: /\.wasm$/,
+        loader: "base64-loader",
+        type: "javascript/auto",
+      },
       {
         test: /\.tsx?$/,
         use: "ts-loader",
@@ -31,4 +40,9 @@ module.exports = {
       template: path.join(__dirname, "src", "index.html"),
     }),
   ],
+  optimization: {
+    minimizer: [new ESBuildPlugin()],
+  },
 };
+
+export default config;

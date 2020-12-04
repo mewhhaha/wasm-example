@@ -41,10 +41,9 @@ const App: React.FC = () => {
   );
 };
 
-var mountNode = document.getElementById("app");
 ReactDOM.render(
   <Suspense fallback="loading">
     <App />
   </Suspense>,
-  mountNode
+  document.getElementById("app")
 );

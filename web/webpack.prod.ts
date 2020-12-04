@@ -38,6 +38,7 @@ const config: webpack.Configuration = {
     new HtmlWebpackPlugin({
       title: "Production",
       template: path.join(__dirname, "src", "index.html"),
+      minify: true,
     }),
   ],
   optimization: {

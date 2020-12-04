@@ -3,7 +3,6 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import webpack from "webpack";
-import reactRefresh from "react-refresh-typescript";
 
 const dist = path.resolve(__dirname, "dist");
 
@@ -11,7 +10,7 @@ const config: webpack.Configuration = {
   mode: "development",
   entry: "./src/index.tsx",
   output: {
-    filename: "index.js",
+    filename: "[name].[hash].js",
     path: dist,
   },
   module: {
@@ -22,13 +21,11 @@ const config: webpack.Configuration = {
         type: "javascript/auto",
       },
       {
-        test: /\.tsx?$/,
-        loader: "ts-loader",
+        test: /\.[jt]sx?$/,
+        loader: "babel-loader",
         exclude: /node_modules/,
         options: {
-          getCustomTransformers: () => ({
-            before: [reactRefresh()],
-          }),
+          plugins: ["react-refresh/babel"],
         },
       },
     ],
@@ -36,21 +33,23 @@ const config: webpack.Configuration = {
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".wasm"],
   },
+  devtool: "inline-source-map",
   // @ts-ignore
   devServer: {
-    contentBase: dist,
-    publicPath: dist,
+    contentBase: "./dist",
+    open: true,
+    hot: true,
   },
   experiments: {
     syncWebAssembly: true,
   },
   plugins: [
-    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: "Development",
-      hmr: true,
       template: path.join(__dirname, "src", "index.html"),
     }),
+    new webpack.HotModuleReplacementPlugin(),
     new ReactRefreshWebpackPlugin(),
   ],
 };

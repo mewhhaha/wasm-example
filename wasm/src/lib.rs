@@ -3,8 +3,6 @@
 
 extern crate wasm_bindgen;
 
-use std::ops::RangeInclusive;
-
 use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
 

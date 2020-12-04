@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "wasm-pack build --release"
+    "build": "rustup run nightly wasm-pack build --release"
   },
   "files": [
     "pkg/wasm_bundle_bg.wasm",

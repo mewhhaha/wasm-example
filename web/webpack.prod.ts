@@ -10,7 +10,7 @@ const config: webpack.Configuration = {
   mode: "production",
   entry: "./src/index.tsx",
   output: {
-    filename: "index.js",
+    filename: "[name].[hash].js",
     path: docs,
   },
   module: {
@@ -21,9 +21,12 @@ const config: webpack.Configuration = {
         type: "javascript/auto",
       },
       {
-        test: /\.tsx?$/,
-        use: "ts-loader",
+        test: /\.[jt]sx?$/,
+        loader: "babel-loader",
         exclude: /node_modules/,
+        options: {
+          plugins: ["react-refresh/babel"],
+        },
       },
     ],
   },
@@ -34,7 +37,7 @@ const config: webpack.Configuration = {
     syncWebAssembly: true,
   },
   plugins: [
-    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: "Production",
       template: path.join(__dirname, "src", "index.html"),

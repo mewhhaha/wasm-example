@@ -26,6 +26,7 @@ importers:
       concurrently: 5.3.0
       copy-webpack-plugin: 6.3.2_webpack@5.9.0
       esbuild: 0.8.18
+      esbuild-loader: 2.6.1_webpack@5.9.0
       esbuild-webpack-plugin: 1.1.0_webpack@5.9.0
       eslint: 7.14.0
       eslint-config-prettier: 6.15.0_eslint@7.14.0
@@ -64,6 +65,7 @@ importers:
       concurrently: ^5.3.0
       copy-webpack-plugin: ^6.3.2
       esbuild: ^0.8.18
+      esbuild-loader: ^2.6.1
       esbuild-webpack-plugin: ^1.1.0
       eslint: ^7.14.0
       eslint-config-prettier: ^6.15.0
@@ -2924,6 +2926,18 @@ packages:
       node: '>= 0.4'
     resolution:
       integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==
+  /esbuild-loader/2.6.1_webpack@5.9.0:
+    dependencies:
+      esbuild: 0.8.18
+      loader-utils: 2.0.0
+      type-fest: 0.20.2
+      webpack: 5.9.0_webpack-cli@4.2.0
+      webpack-sources: 2.2.0
+    dev: true
+    peerDependencies:
+      webpack: ^4.40.0 || ^5.0.0
+    resolution:
+      integrity: sha512-IXIrOMtB4DtYcIjzHJO5v29WlZDkK84CA2oSpEhrphLlJb5SPP+iEARpHhU4qyxsZuwiQ9HyyRCPzkQ0xUchCA==
   /esbuild-webpack-plugin/1.1.0_webpack@5.9.0:
     dependencies:
       esbuild: 0.7.22
@@ -6523,6 +6537,12 @@ packages:
       node: '>= 0.8.0'
     resolution:
       integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==
+  /type-fest/0.20.2:
+    dev: true
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-Ne+eE4r0/iWnpAxD852z3A+N0Bt5RN//NjJwRd2VFHEmrywxf5vsZlh4R6lixl6B+wz/8d+maTSAkN1FIkI3LQ==
   /type-fest/0.8.1:
     dev: true
     engines:

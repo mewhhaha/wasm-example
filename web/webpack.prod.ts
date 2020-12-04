@@ -1,7 +1,7 @@
 import path from "path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
-import ESBuildPlugin from "esbuild-webpack-plugin";
+import { ESBuildPlugin, ESBuildMinifyPlugin } from "esbuild-loader";
 import webpack from "webpack";
 
 const docs = path.resolve(__dirname, "../docs");
@@ -22,10 +22,11 @@ const config: webpack.Configuration = {
       },
       {
         test: /\.[jt]sx?$/,
-        loader: "babel-loader",
-        exclude: /node_modules/,
+        loader: "esbuild-loader",
         options: {
-          plugins: ["react-refresh/babel"],
+          jsxFactory: "jsx",
+          loader: "tsx",
+          target: "esnext",
         },
       },
     ],
@@ -43,9 +44,11 @@ const config: webpack.Configuration = {
       template: path.join(__dirname, "src", "index.html"),
       minify: true,
     }),
+    new ESBuildPlugin(),
   ],
   optimization: {
-    minimizer: [new ESBuildPlugin()],
+    minimize: true,
+    minimizer: [new ESBuildMinifyPlugin({ target: "esnext" })],
   },
 };
 

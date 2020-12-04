@@ -24,7 +24,6 @@ const config: webpack.Configuration = {
         test: /\.[jt]sx?$/,
         loader: "esbuild-loader",
         options: {
-          jsxFactory: "jsx",
           loader: "tsx",
           target: "esnext",
         },

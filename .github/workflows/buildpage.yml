@@ -59,11 +59,9 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          
+          git switch docs 
           rm -rf docs
           mv temp docs
-
-          git switch docs 
           git add docs
           git commit -m "[CI] Build docs"
           git push

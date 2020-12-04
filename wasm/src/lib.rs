@@ -264,7 +264,7 @@ fn valid_pid(pid: &str) -> bool {
 
 fn is_valid_passport(passport: &&str) -> bool {
     let number_of_required_fields = 7;
-    let number_of_fields = passport
+    let number_of_valid_fields = passport
         .split_whitespace()
         .filter(|item| match item.split_once(':') {
             Some(("byr", value)) => match value.parse::<i32>() {
@@ -287,7 +287,7 @@ fn is_valid_passport(passport: &&str) -> bool {
             _ => false,
         })
         .count();
-    number_of_fields == number_of_required_fields
+    number_of_valid_fields == number_of_required_fields
 }
 
 #[wasm_bindgen(js_name = "advent4Part2")]

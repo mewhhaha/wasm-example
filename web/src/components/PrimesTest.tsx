@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import React, { useState } from "react";
 import { wasmCrate } from "../helpers/wasm";
 import { Test } from "./Test";
 

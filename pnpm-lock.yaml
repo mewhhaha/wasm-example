@@ -20,8 +20,6 @@ importers:
       clean-webpack-plugin: 3.0.0_webpack@5.9.0
       concurrently: 5.3.0
       cross-env: 7.0.3
-      esbuild: 0.8.18
-      esbuild-webpack-plugin: 1.1.0_webpack@5.9.0
       eslint: 7.14.0
       eslint-config-prettier: 6.15.0_eslint@7.14.0
       eslint-config-react-app: 6.0.0_4938d1f6546a338bebf6285eae2b0d4b
@@ -52,8 +50,6 @@ importers:
       clean-webpack-plugin: ^3.0.0
       concurrently: ^5.3.0
       cross-env: ^7.0.3
-      esbuild: ^0.8.18
-      esbuild-webpack-plugin: ^1.1.0
       eslint: ^7.14.0
       eslint-config-prettier: ^6.15.0
       eslint-config-react-app: ^6.0.0
@@ -1889,27 +1885,6 @@ packages:
       node: '>= 0.4'
     resolution:
       integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==
-  /esbuild-webpack-plugin/1.1.0_webpack@5.9.0:
-    dependencies:
-      esbuild: 0.7.22
-      webpack: 5.9.0_webpack-cli@4.2.0
-    dev: true
-    peerDependencies:
-      webpack: ^4.0.0
-    resolution:
-      integrity: sha512-24E93ml+cTT69DIm7f5nKimkNXKFiiqPZNu7eWYBA/Do7AdT/O7kZidmPTxY8bRyhkk6lvNrhnjEZyJSzOvEEA==
-  /esbuild/0.7.22:
-    dev: true
-    hasBin: true
-    requiresBuild: true
-    resolution:
-      integrity: sha512-B43SYg8LGWYTCv9Gs0RnuLNwjzpuWOoCaZHTWEDEf5AfrnuDMerPVMdCEu7xOdhFvQ+UqfP2MGU9lxEy0JzccA==
-  /esbuild/0.8.18:
-    dev: true
-    hasBin: true
-    requiresBuild: true
-    resolution:
-      integrity: sha512-EPbCSr7Ems1loeoy1faUGnJOwTwSrGcoYVQ4f4T4JMKjxJxrWAg+zqXkZK7GvqxfvokPp3HV6Raqn6rqAuW7+Q==
   /escalade/3.1.1:
     dev: true
     engines:

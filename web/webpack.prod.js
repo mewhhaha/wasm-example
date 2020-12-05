@@ -1,7 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const ESBuildMinifyPlugin = require("esbuild-webpack-plugin").default;
 
 const docs = path.resolve(__dirname, "../docs");
 
@@ -35,10 +34,6 @@ const config = {
       minify: true,
     }),
   ],
-  optimization: {
-    minimize: true,
-    minimizer: [new ESBuildMinifyPlugin({ target: "esnext" })],
-  },
 };
 
 module.exports = config;

@@ -1,4 +1,3 @@
-import React from "react";
 import { wasmCrate } from "../helpers/wasm";
 import { Test } from "./Test";
 

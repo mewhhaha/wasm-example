@@ -1,39 +1,38 @@
-import path from "path";
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import { CleanWebpackPlugin } from "clean-webpack-plugin";
-import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
-import webpack from "webpack";
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const webpack = require("webpack");
 
 const dist = path.resolve(__dirname, "dist");
 
-const config: webpack.Configuration = {
+const config = {
   mode: "development",
   entry: "./src/index.tsx",
   output: {
-    filename: "[name].[hash].js",
+    filename: "index.js",
     path: dist,
   },
   module: {
     rules: [
       {
-        test: /\.wasm$/,
-        loader: "base64-loader",
-        type: "javascript/auto",
-      },
-      {
-        test: /\.[jt]sx?$/,
+        test: /\.jsx?$/,
         loader: "babel-loader",
         exclude: /node_modules/,
         options: {
           plugins: ["react-refresh/babel"],
         },
       },
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        exclude: /node_modules/,
+      },
     ],
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".wasm"],
   },
-  devtool: "inline-source-map",
   // @ts-ignore
   devServer: {
     contentBase: "./dist",
@@ -41,10 +40,10 @@ const config: webpack.Configuration = {
     hot: true,
   },
   experiments: {
-    syncWebAssembly: true,
+    asyncWebAssembly: true,
   },
   plugins: [
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({ cleanStaleWebpackAssets: true }),
     new HtmlWebpackPlugin({
       title: "Development",
       template: path.join(__dirname, "src", "index.html"),
@@ -54,4 +53,4 @@ const config: webpack.Configuration = {
   ],
 };
 
-export default config;
+module.exports = config;

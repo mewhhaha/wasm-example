@@ -13,7 +13,3 @@ parse-display = "0.4"
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = ["-Oz", "--enable-mutable-globals"]
-
-[profile.release]
-lto = true
-opt-level = 'z'

@@ -1,28 +1,22 @@
-import path from "path";
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import { CleanWebpackPlugin } from "clean-webpack-plugin";
-import ESBuildMinifyPlugin from "esbuild-webpack-plugin";
-import webpack from "webpack";
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const ESBuildMinifyPlugin = require("esbuild-webpack-plugin").default;
 
 const docs = path.resolve(__dirname, "../docs");
 
-const config: webpack.Configuration = {
+const config = {
   mode: "production",
   entry: "./src/index.tsx",
   output: {
-    filename: "[name].[hash].js",
+    filename: "index.js",
     path: docs,
   },
   module: {
     rules: [
       {
-        test: /\.wasm$/,
-        loader: "base64-loader",
-        type: "javascript/auto",
-      },
-      {
-        test: /\.[jt]sx?$/,
-        loader: "babel-loader",
+        test: /\.tsx?$/,
+        loader: "ts-loader",
         exclude: /node_modules/,
       },
     ],
@@ -31,10 +25,10 @@ const config: webpack.Configuration = {
     extensions: [".tsx", ".ts", ".js", ".wasm"],
   },
   experiments: {
-    syncWebAssembly: true,
+    asyncWebAssembly: true,
   },
   plugins: [
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({ cleanStaleWebpackAssets: true }),
     new HtmlWebpackPlugin({
       title: "Production",
       template: path.join(__dirname, "src", "index.html"),
@@ -47,4 +41,4 @@ const config: webpack.Configuration = {
   },
 };
 
-export default config;
+module.exports = config;

@@ -1,5 +1,6 @@
 #![feature(or_patterns)]
 #![feature(str_split_once)]
+#![feature(iterator_fold_self)]
 
 extern crate wasm_bindgen;
 
@@ -281,7 +282,7 @@ fn is_valid_passport(passport: &&str) -> bool {
             Some(("hcl", value)) => valid_hair_color(value),
             Some(("ecl", value)) => valid_eye_color(value),
             Some(("pid", value)) => valid_pid(value),
-
+            Some(("cid", _)) => true,
             _ => false,
         })
         .count();
@@ -292,4 +293,85 @@ fn is_valid_passport(passport: &&str) -> bool {
 pub fn advent_4_part_2(input: String) -> usize {
     let passports = input.split("\n\n");
     passports.filter(is_valid_passport).count()
+}
+
+fn calculate_seat_id(binary_seat: u16) -> u16 {
+    let row_mask = 0b1111111000;
+    let column_mask = 0b0000000111;
+    let row = (binary_seat & row_mask) >> 3;
+    let column = binary_seat & column_mask;
+
+    row * 8 + column
+}
+
+#[wasm_bindgen(js_name = "advent5Part1")]
+pub fn advent_5_part_1(input: String) -> u16 {
+    let boarding_passes = input.lines();
+    boarding_passes
+        .map(to_binary)
+        .map(calculate_seat_id)
+        .max()
+        .expect("!")
+}
+
+fn to_binary(boarding_pass: &str) -> u16 {
+    boarding_pass.chars().fold(0, |binary, c| {
+        (binary << 1)
+            + match c {
+                'B' | 'R' => 1,
+                _ => 0,
+            }
+    })
+}
+
+#[wasm_bindgen(js_name = "advent5Part2")]
+pub fn advent_5_part_2(input: String) -> u16 {
+    let boarding_passes = input.lines();
+    let mut binary_seats = boarding_passes
+        .map(to_binary)
+        .map(calculate_seat_id)
+        .collect::<Vec<_>>();
+    binary_seats.sort();
+
+    for (prev, curr) in binary_seats.iter().zip(binary_seats.iter().skip(1)) {
+        if *curr - 1 != *prev {
+            return curr - 1;
+        }
+    }
+
+    0
+}
+
+#[test]
+fn test_to_binary() {
+    assert_eq!(to_binary("FBFBBFFRLR"), 0b0101100101)
+}
+
+#[test]
+fn test_calculate_seat_id() {
+    assert_eq!(calculate_seat_id(0b0101100101), 357)
+}
+
+#[test]
+fn test_rest() {
+    let rest = vec![
+        0b1111111000,
+        0b1111111100,
+        0b1111111110,
+        0b1111111111,
+        0b1111111101,
+        0b1111111011,
+        0b1111111001,
+        0b1111111010,
+        0b0000000000,
+        0b0000000100,
+        0b0000000110,
+        0b0000000111,
+        0b0000000101,
+        0b0000000011,
+        0b0000000001,
+        0b0000000010,
+    ]
+    .into_iter();
+    assert_eq!(rest.fold(0, |acc, curr| acc ^ curr), 0)
 }

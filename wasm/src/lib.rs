@@ -234,14 +234,10 @@ fn valid_height(hgt: &str) -> bool {
 }
 
 fn valid_hair_color(hcl: &str) -> bool {
-    if hcl.len() != 7 {
-        return false;
-    }
-
     let (hash, number) = hcl.split_at(1);
 
     match (hash, i32::from_str_radix(number, 16)) {
-        ("#", Ok(_)) => true,
+        ("#", Ok(_)) => hcl.len() == 7,
         _ => false,
     }
 }
@@ -254,12 +250,8 @@ fn valid_eye_color(ecl: &str) -> bool {
 }
 
 fn valid_pid(pid: &str) -> bool {
-    if pid.len() != 9 {
-        return false;
-    }
-
     match pid.parse::<i32>() {
-        Ok(_) => true,
+        Ok(_) => pid.len() == 9,
         _ => false,
     }
 }

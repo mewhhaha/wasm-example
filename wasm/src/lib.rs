@@ -341,37 +341,3 @@ pub fn advent_5_part_2(input: String) -> u16 {
 
     estimate_full_sum(range) - missing_one_sum
 }
-
-#[test]
-fn test_to_binary() {
-    assert_eq!(to_binary("FBFBBFFRLR"), 0b0101100101)
-}
-
-#[test]
-fn test_calculate_seat_id() {
-    assert_eq!(calculate_seat_id(0b0101100101), 357)
-}
-
-#[test]
-fn test_rest() {
-    let rest = vec![
-        0b1111111000,
-        0b1111111100,
-        0b1111111110,
-        0b1111111111,
-        0b1111111101,
-        0b1111111011,
-        0b1111111001,
-        0b1111111010,
-        0b0000000000,
-        0b0000000100,
-        0b0000000110,
-        0b0000000111,
-        0b0000000101,
-        0b0000000011,
-        0b0000000001,
-        0b0000000010,
-    ]
-    .into_iter();
-    assert_eq!(rest.fold(0, |acc, curr| acc ^ curr), 0)
-}

@@ -18,6 +18,8 @@ import {
   Advent5Part1,
   Advent5Part2,
   TransferStringTest,
+  Advent6Part1,
+  Advent6Part2,
 } from "./components";
 
 const appStyle: React.CSSProperties = {
@@ -44,6 +46,8 @@ const App: React.FC = () => {
       <Advent4Part2 />
       <Advent5Part1 />
       <Advent5Part2 />
+      <Advent6Part1 />
+      <Advent6Part2 />
     </div>
   );
 };

@@ -4,6 +4,8 @@
 
 extern crate wasm_bindgen;
 
+use std::collections::HashSet;
+
 use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -340,4 +342,36 @@ pub fn advent_5_part_2(input: String) -> u16 {
         .sum();
 
     estimate_full_sum(range) - missing_one_sum
+}
+
+fn count_group(group: &str) -> usize {
+    group
+        .chars()
+        .filter(|c| c.is_alphabetic())
+        .collect::<HashSet<_>>()
+        .len()
+}
+
+fn count_unanimous(group: &str) -> usize {
+    group
+        .lines()
+        .fold(Option::None, |prev, line| {
+            let set: HashSet<_> = line.chars().filter(|c| c.is_alphabetic()).collect();
+            Some(match prev {
+                None => set,
+                Some(existing) => set.intersection(&existing).cloned().collect(),
+            })
+        })
+        .expect("!")
+        .len()
+}
+
+#[wasm_bindgen(js_name = "advent6Part1")]
+pub fn advent_6_part_1(input: String) -> usize {
+    input.split("\n\n").map(count_group).sum()
+}
+
+#[wasm_bindgen(js_name = "advent6Part2")]
+pub fn advent_6_part_2(input: String) -> usize {
+    input.split("\n\n").map(count_unanimous).sum()
 }

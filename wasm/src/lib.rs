@@ -324,22 +324,28 @@ fn to_binary(boarding_pass: &str) -> u16 {
     })
 }
 
+fn estimated_sum((min, max): (u16, u16)) -> u16 {
+    let below = (min - 1) * min / 2;
+    let range = max * (max + 1) / 2;
+
+    range - below
+}
+
 #[wasm_bindgen(js_name = "advent5Part2")]
 pub fn advent_5_part_2(input: String) -> u16 {
     let boarding_passes = input.lines();
-    let mut binary_seats = boarding_passes
+    let mut range = (u16::MAX, 0);
+    let real_sum: u16 = boarding_passes
         .map(to_binary)
-        .map(calculate_seat_id)
-        .collect::<Vec<_>>();
-    binary_seats.sort();
+        .map(|binary| {
+            let seat_id = calculate_seat_id(binary);
+            range.0 = range.0.min(seat_id);
+            range.1 = range.1.max(seat_id);
+            seat_id
+        })
+        .sum();
 
-    for (prev, curr) in binary_seats.iter().zip(binary_seats.iter().skip(1)) {
-        if *curr - 1 != *prev {
-            return curr - 1;
-        }
-    }
-
-    0
+    estimated_sum(range) - real_sum
 }
 
 #[test]

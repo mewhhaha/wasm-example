@@ -277,7 +277,6 @@ fn is_valid_passport(passport: &&str) -> bool {
             Some(("hcl", value)) => valid_hair_color(value),
             Some(("ecl", value)) => valid_eye_color(value),
             Some(("pid", value)) => valid_pid(value),
-            Some(("cid", _)) => true,
             _ => false,
         })
         .count();

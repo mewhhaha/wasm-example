@@ -356,7 +356,7 @@ fn count_unanimous(group: &str) -> usize {
     group
         .lines()
         .fold(Option::None, |prev, line| {
-            let set: HashSet<_> = line.chars().filter(|c| c.is_alphabetic()).collect();
+            let set: HashSet<_> = line.chars().collect();
             Some(match prev {
                 None => set,
                 Some(existing) => set.intersection(&existing).cloned().collect(),

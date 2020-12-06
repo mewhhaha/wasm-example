@@ -324,7 +324,7 @@ fn to_binary(boarding_pass: &str) -> u16 {
     })
 }
 
-fn estimated_sum((min, max): (u16, u16)) -> u16 {
+fn estimate_full_sum((min, max): (u16, u16)) -> u16 {
     let below = (min - 1) * min / 2;
     let range = max * (max + 1) / 2;
 
@@ -335,7 +335,7 @@ fn estimated_sum((min, max): (u16, u16)) -> u16 {
 pub fn advent_5_part_2(input: String) -> u16 {
     let boarding_passes = input.lines();
     let mut range = (u16::MAX, 0);
-    let real_sum: u16 = boarding_passes
+    let missing_one_sum: u16 = boarding_passes
         .map(to_binary)
         .map(|binary| {
             let seat_id = calculate_seat_id(binary);
@@ -345,7 +345,7 @@ pub fn advent_5_part_2(input: String) -> u16 {
         })
         .sum();
 
-    estimated_sum(range) - real_sum
+    estimate_full_sum(range) - missing_one_sum
 }
 
 #[test]

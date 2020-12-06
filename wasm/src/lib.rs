@@ -355,13 +355,8 @@ fn count_group(group: &str) -> usize {
 fn count_unanimous(group: &str) -> usize {
     group
         .lines()
-        .fold(Option::None, |prev, line| {
-            let set: HashSet<_> = line.chars().collect();
-            Some(match prev {
-                None => set,
-                Some(existing) => set.intersection(&existing).cloned().collect(),
-            })
-        })
+        .map(|line| line.chars().collect::<HashSet<_>>())
+        .fold_first(|a, b| &a & &b)
         .expect("!")
         .len()
 }

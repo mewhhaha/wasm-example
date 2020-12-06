@@ -12,7 +12,16 @@ export const Advent6Part1 = () => {
       func={(input) => {
         let groupAnswers: number;
 
-        const js = null;
+        const js = () => {
+          const sum = input
+            .split("\n\n")
+            .map((group) => {
+              const set = new Set(group.split("").filter((x) => x !== "\n"));
+              return set.size;
+            })
+            .reduce((acc, x) => acc + x, 0);
+          return sum;
+        };
 
         const wasm = () => {
           groupAnswers = advent6Part1(input);
@@ -40,7 +49,27 @@ export const Advent6Part2 = () => {
       func={(input) => {
         let unanimousGroupAnswers: number;
 
-        const js = null;
+        const js = () => {
+          const intersection = (mut: Set<string>, inc: Set<string>) => {
+            mut.forEach((x) => {
+              if (!inc.has(x)) mut.delete(x);
+            });
+          };
+          const sum = input
+            .split("\n\n")
+            .map((group) => {
+              const [base, ...rest] = group
+                .split("\n")
+                .map((line) => new Set(line));
+
+              rest.forEach((set) => {
+                intersection(base, set);
+              });
+              return base.size;
+            })
+            .reduce((acc, x) => acc + x, 0);
+          return sum;
+        };
 
         const wasm = () => {
           unanimousGroupAnswers = advent6Part2(input);

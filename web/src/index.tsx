@@ -17,6 +17,7 @@ import {
   Advent4Part2,
   Advent5Part1,
   Advent5Part2,
+  TransferStringTest,
 } from "./components";
 
 const appStyle: React.CSSProperties = {
@@ -29,6 +30,7 @@ const App: React.FC = () => {
     <div style={appStyle}>
       <TransferSingleTest />
       <TransferDoubleTest />
+      <TransferStringTest />
       <ReduceTest />
       <MapFilterTest />
       <PrimesTest />

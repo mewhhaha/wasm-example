@@ -9,3 +9,4 @@ export * from "./ReduceTest";
 export * from "./Test";
 export * from "./TransferDoubleTest";
 export * from "./TransferSingleTest";
+export * from "./TransferStringTest";

@@ -15,6 +15,9 @@ pub fn array_transfer_double_test(array: Box<[f64]>) -> Box<[f64]> {
     array
 }
 
+#[wasm_bindgen(js_name = "stringTransferSingleTest")]
+pub fn string_transfer_single_test(_input: String) {}
+
 #[wasm_bindgen(js_name = "arrayMapFilterTest")]
 pub fn array_map_filter_test(array: Box<[f64]>) -> Box<[f64]> {
     array

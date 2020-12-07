@@ -370,3 +370,36 @@ pub fn advent_6_part_1(input: String) -> usize {
 pub fn advent_6_part_2(input: String) -> usize {
     input.split("\n\n").map(count_unanimous).sum()
 }
+
+fn add_bit_group(sum: i32, group: i32) -> i32 {
+    sum + group.count_ones() as i32
+}
+
+fn add_bit_vote(person: i32, b: u8) -> i32 {
+    person | (1 << (b - b'a'))
+}
+
+fn add_bit_person(group: i32, person: i32) -> i32 {
+    match group {
+        -1 => person,
+        _ => group & person,
+    }
+}
+
+#[wasm_bindgen(js_name = "advent6Part2Bits")]
+pub fn advent_6_part_2_bits(mut input: String) -> i32 {
+    input.push('\n');
+
+    let (_, (sum, _, _)) =
+        input
+            .bytes()
+            .fold((b'\n', (0, -1, 0)), |(prev, (sum, group, person)), b| {
+                let state = match (prev, b) {
+                    (b'\n', b'\n') => (add_bit_group(sum, group), -1, 0),
+                    (_, b'\n') => (sum, add_bit_person(group, person), 0),
+                    _ => (sum, group, add_bit_vote(person, b)),
+                };
+                (b, state)
+            });
+    sum
+}

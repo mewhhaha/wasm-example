@@ -86,3 +86,31 @@ export const Advent6Part2 = () => {
     />
   );
 };
+
+export const Advent6Part2Bits = () => {
+  const { advent6Part2Bits } = wasmCrate();
+  const [result, setResult] = useState<null | string>(null);
+  return (
+    <Test
+      inputType="textarea"
+      placeholder="Puzzle input"
+      func={(input) => {
+        let unanimousGroupAnswers: number;
+
+        const js = null;
+
+        const wasm = () => {
+          unanimousGroupAnswers = advent6Part2Bits(input);
+        };
+
+        const after = () => {
+          setResult(unanimousGroupAnswers.toString());
+        };
+
+        return [js, wasm, after];
+      }}
+      label="Advent of Code 6, Part 2 Bits"
+      result={result}
+    />
+  );
+};

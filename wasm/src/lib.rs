@@ -409,16 +409,13 @@ struct Name(String);
 
 #[wasm_bindgen(js_name = "advent7Part1")]
 pub fn advent_7_part_1(input: String) -> usize {
-    let mut lookup: HashMap<String, HashSet<&str>> = HashMap::new();
+    let mut lookup: HashMap<String, Vec<&str>> = HashMap::new();
 
     input.lines().for_each(|line| {
         let (container, contains) = line.split_once(" bags contain ").expect("!");
         contains.split(", ").for_each(|bags| {
             if let Ok(Name(name)) = bags.parse::<Name>() {
-                lookup
-                    .entry(name)
-                    .or_insert(HashSet::new())
-                    .insert(container);
+                lookup.entry(name).or_insert(Vec::new()).push(container);
             }
         });
     });
@@ -465,12 +462,11 @@ pub fn advent_7_part_2(input: String) -> u32 {
 
     input.lines().for_each(|line| {
         let (container, contains) = line.split_once(" bags contain ").expect("!");
-        let mut children = Vec::new();
-        contains.split(", ").for_each(|bags| {
-            if let Ok(Bags { n, name }) = bags.parse::<Bags>() {
-                children.push((n, name))
-            }
-        });
+
+        let children: Vec<(u32, String)> = contains
+            .split(", ")
+            .filter_map(|bags| bags.parse::<Bags>().ok().map(|Bags { n, name }| (n, name)))
+            .collect();
         lookup.insert(container.to_owned(), children);
     });
 

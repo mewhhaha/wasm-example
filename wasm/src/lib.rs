@@ -445,11 +445,11 @@ struct Bags {
     name: String,
 }
 
-fn traverse(tree: &HashMap<String, Vec<(u32, String)>>, node: &String) -> u32 {
+fn traverse(tree: &HashMap<&str, Vec<Bags>>, node: &str) -> u32 {
     let mut sum = 1;
     if let Some(children) = tree.get(node) {
-        for (n, child) in children {
-            sum += n * traverse(tree, child);
+        for Bags { n, name } in children {
+            sum += n * traverse(tree, name);
         }
     }
 
@@ -458,17 +458,17 @@ fn traverse(tree: &HashMap<String, Vec<(u32, String)>>, node: &String) -> u32 {
 
 #[wasm_bindgen(js_name = "advent7Part2")]
 pub fn advent_7_part_2(input: String) -> u32 {
-    let mut lookup: HashMap<String, Vec<(u32, String)>> = HashMap::new();
+    let mut lookup: HashMap<&str, Vec<Bags>> = HashMap::new();
 
     input.lines().for_each(|line| {
         let (container, contains) = line.split_once(" bags contain ").expect("!");
 
-        let children: Vec<(u32, String)> = contains
+        let children: Vec<_> = contains
             .split(", ")
-            .filter_map(|bags| bags.parse::<Bags>().ok().map(|Bags { n, name }| (n, name)))
+            .filter_map(|bags| bags.parse::<Bags>().ok())
             .collect();
-        lookup.insert(container.to_owned(), children);
+        lookup.insert(container, children);
     });
 
-    traverse(&lookup, &"shiny gold".to_owned()) - 1
+    traverse(&lookup, "shiny gold") - 1
 }

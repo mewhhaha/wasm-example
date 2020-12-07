@@ -4,7 +4,10 @@
 
 extern crate wasm_bindgen;
 
-use std::{collections::HashSet, time::Instant};
+use std::{
+    collections::{HashMap, HashSet},
+    time::Instant,
+};
 
 use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
@@ -398,4 +401,78 @@ pub fn advent_6_part_2_bits(mut input: String) -> i32 {
         b
     });
     sum
+}
+
+#[derive(FromStr, PartialEq)]
+#[from_str(regex = "\\d+ (?P<0>\\w+ \\w+) .+")]
+struct Name(String);
+
+#[wasm_bindgen(js_name = "advent7Part1")]
+pub fn advent_7_part_1(input: String) -> usize {
+    let mut lookup: HashMap<String, HashSet<&str>> = HashMap::new();
+
+    input.lines().for_each(|line| {
+        let (container, contains) = line.split_once(" bags contain ").expect("!");
+        contains.split(", ").for_each(|bags| {
+            if let Ok(Name(name)) = bags.parse::<Name>() {
+                lookup
+                    .entry(name)
+                    .or_insert(HashSet::new())
+                    .insert(container);
+            }
+        });
+    });
+
+    let mut todo = vec!["shiny gold"];
+    let mut colors: HashSet<&str> = HashSet::new();
+
+    while !todo.is_empty() {
+        let color = todo.pop().expect("!");
+        if let Some(parents) = lookup.get(color) {
+            for parent in parents {
+                if !colors.insert(parent) {
+                    continue;
+                }
+                todo.push(parent);
+            }
+        };
+    }
+
+    colors.len()
+}
+
+#[derive(FromStr, PartialEq)]
+#[from_str(regex = "(?P<n>\\d+) (?P<name>\\w+ \\w+) .+")]
+struct Bags {
+    n: u32,
+    name: String,
+}
+
+fn traverse(tree: &HashMap<String, Vec<(u32, String)>>, node: &String) -> u32 {
+    let mut sum = 1;
+    if let Some(children) = tree.get(node) {
+        for (n, child) in children {
+            sum += n * traverse(tree, child);
+        }
+    }
+
+    sum
+}
+
+#[wasm_bindgen(js_name = "advent7Part2")]
+pub fn advent_7_part_2(input: String) -> u32 {
+    let mut lookup: HashMap<String, Vec<(u32, String)>> = HashMap::new();
+
+    input.lines().for_each(|line| {
+        let (container, contains) = line.split_once(" bags contain ").expect("!");
+        let mut children = Vec::new();
+        contains.split(", ").for_each(|bags| {
+            if let Ok(Bags { n, name }) = bags.parse::<Bags>() {
+                children.push((n, name))
+            }
+        });
+        lookup.insert(container.to_owned(), children);
+    });
+
+    traverse(&lookup, &"shiny gold".to_owned()) - 1
 }

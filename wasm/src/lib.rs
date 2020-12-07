@@ -472,3 +472,13 @@ pub fn advent_7_part_2(input: String) -> u32 {
 
     traverse(&lookup, "shiny gold") - 1
 }
+
+// #[test]
+// fn benchmark() {
+//     let text = include_str!("./data.txt").to_owned();
+//     let before = Instant::now();
+//     let result = advent_7_part_2(text);
+//     let after = before.elapsed();
+//     assert_eq!(after.as_nanos(), 0);
+//     assert_eq!(result, 0);
+// }

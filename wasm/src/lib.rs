@@ -457,17 +457,18 @@ fn traverse(tree: &HashMap<&str, Vec<Bags>>, node: &str) -> u32 {
 
 #[wasm_bindgen(js_name = "advent7Part2")]
 pub fn advent_7_part_2(input: String) -> u32 {
-    let mut lookup: HashMap<&str, Vec<Bags>> = HashMap::new();
+    let lookup = input
+        .lines()
+        .map(|line| {
+            let (container, contains) = line.split_once(" bags contain ").expect("!");
 
-    input.lines().for_each(|line| {
-        let (container, contains) = line.split_once(" bags contain ").expect("!");
-
-        let children: Vec<_> = contains
-            .split(", ")
-            .filter_map(|bags| bags.parse::<Bags>().ok())
-            .collect();
-        lookup.insert(container, children);
-    });
+            let children: Vec<_> = contains
+                .split(", ")
+                .filter_map(|bags| bags.parse::<Bags>().ok())
+                .collect();
+            (container, children)
+        })
+        .collect();
 
     traverse(&lookup, "shiny gold") - 1
 }

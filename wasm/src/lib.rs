@@ -532,11 +532,9 @@ pub fn advent_8_part_2(input: String) -> i32 {
         let hack = match code[i] {
             Some(Op::Jmp(n)) => Some(Op::Nop(n)),
             Some(Op::Nop(n)) => Some(Op::Jmp(n)),
-            _ => None,
+            _ => continue,
         };
-        if let None = hack {
-            continue;
-        }
+
         let mut code_copy = code.clone();
         code_copy[i] = hack;
 

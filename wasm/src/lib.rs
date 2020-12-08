@@ -476,12 +476,85 @@ pub fn advent_7_part_2(input: String) -> u32 {
     traverse(&lookup, "shiny gold") - 1
 }
 
+#[derive(FromStr, PartialEq, Clone)]
+enum Op {
+    #[from_str(regex = "acc \\+?(?P<0>(\\d+|(-\\d+)))")]
+    Acc(i32),
+    #[from_str(regex = "jmp \\+?(?P<0>(\\d+|(-\\d+)))")]
+    Jmp(i32),
+    #[from_str(regex = "nop \\+?(?P<0>(\\d+|(-\\d+)))")]
+    Nop(i32),
+}
+
+enum Finish {
+    Loop(i32),
+    Exit(i32),
+}
+
+fn machine(code: &mut Vec<Option<Op>>) -> Finish {
+    let mut i: i32 = 0;
+    let mut acc = 0;
+
+    while let Some(op) = &code[i as usize] {
+        let mv: i32 = match op {
+            Op::Acc(x) => {
+                acc += x;
+                1
+            }
+            Op::Nop(_) => 1,
+            Op::Jmp(n) => *n,
+        };
+        code[i as usize] = None;
+        i += mv;
+        if i as usize == code.len() {
+            return Finish::Exit(acc);
+        }
+    }
+
+    Finish::Loop(acc)
+}
+
+#[wasm_bindgen(js_name = "advent8Part1")]
+pub fn advent_8_part_1(input: String) -> i32 {
+    let mut code: Vec<Option<Op>> = input.lines().map(|line| line.parse::<Op>().ok()).collect();
+
+    match machine(&mut code) {
+        Finish::Loop(res) => res,
+        _ => panic!("Unexpected finish"),
+    }
+}
+
+fn hack(mut code: Vec<Option<Op>>, j: usize) -> Finish {
+    let hack = match code[j] {
+        Some(Op::Jmp(n)) => Some(Op::Nop(n)),
+        Some(Op::Nop(n)) => Some(Op::Jmp(n)),
+        _ => None,
+    };
+    code[j] = hack;
+    let finish = machine(&mut code);
+    finish
+}
+
+#[wasm_bindgen(js_name = "advent8Part2")]
+pub fn advent_8_part_2(input: String) -> i32 {
+    let code: Vec<Option<Op>> = input.lines().map(|line| line.parse::<Op>().ok()).collect();
+
+    for i in 0..code.len() {
+        let code_copy = code.clone();
+        if let Finish::Exit(res) = hack(code_copy, i) {
+            return res;
+        }
+    }
+
+    panic!("Didn't quite work, did it?")
+}
+
 // #[test]
 // fn benchmark() {
 //     let text = include_str!("./data.txt").to_owned();
 //     let before = Instant::now();
-//     let result = advent_7_part_2(text);
+//     let result = advent_8_part_2(text);
 //     let after = before.elapsed();
+//     assert_eq!(result, 11579);
 //     assert_eq!(after.as_nanos(), 0);
-//     assert_eq!(result, 0);
 // }

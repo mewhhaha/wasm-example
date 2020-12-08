@@ -491,7 +491,7 @@ enum Finish {
     Exit(i32),
 }
 
-fn machine(code: &mut Vec<Option<Op>>) -> Finish {
+fn machine(mut code: Vec<Option<Op>>) -> Finish {
     let mut i: i32 = 0;
     let mut acc = 0;
 
@@ -516,9 +516,9 @@ fn machine(code: &mut Vec<Option<Op>>) -> Finish {
 
 #[wasm_bindgen(js_name = "advent8Part1")]
 pub fn advent_8_part_1(input: String) -> i32 {
-    let mut code: Vec<Option<Op>> = input.lines().map(|line| line.parse::<Op>().ok()).collect();
+    let code: Vec<Option<Op>> = input.lines().map(|line| line.parse::<Op>().ok()).collect();
 
-    match machine(&mut code) {
+    match machine(code) {
         Finish::Loop(res) => res,
         _ => panic!("Unexpected finish"),
     }
@@ -540,7 +540,7 @@ pub fn advent_8_part_2(input: String) -> i32 {
         let mut code_copy = code.clone();
         code_copy[i] = hack;
 
-        if let Finish::Exit(res) = machine(&mut code_copy) {
+        if let Finish::Exit(res) = machine(code_copy) {
             return res;
         }
     }

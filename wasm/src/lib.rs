@@ -524,37 +524,26 @@ pub fn advent_8_part_1(input: String) -> i32 {
     }
 }
 
-fn hack(mut code: Vec<Option<Op>>, j: usize) -> Finish {
-    let hack = match code[j] {
-        Some(Op::Jmp(n)) => Some(Op::Nop(n)),
-        Some(Op::Nop(n)) => Some(Op::Jmp(n)),
-        _ => None,
-    };
-    code[j] = hack;
-    let finish = machine(&mut code);
-    finish
-}
-
 #[wasm_bindgen(js_name = "advent8Part2")]
 pub fn advent_8_part_2(input: String) -> i32 {
     let code: Vec<Option<Op>> = input.lines().map(|line| line.parse::<Op>().ok()).collect();
 
     for i in 0..code.len() {
-        let code_copy = code.clone();
-        if let Finish::Exit(res) = hack(code_copy, i) {
+        let hack = match code[i] {
+            Some(Op::Jmp(n)) => Some(Op::Nop(n)),
+            Some(Op::Nop(n)) => Some(Op::Jmp(n)),
+            _ => None,
+        };
+        if let None = hack {
+            continue;
+        }
+        let mut code_copy = code.clone();
+        code_copy[i] = hack;
+
+        if let Finish::Exit(res) = machine(&mut code_copy) {
             return res;
         }
     }
 
     panic!("Didn't quite work, did it?")
 }
-
-// #[test]
-// fn benchmark() {
-//     let text = include_str!("./data.txt").to_owned();
-//     let before = Instant::now();
-//     let result = advent_8_part_2(text);
-//     let after = before.elapsed();
-//     assert_eq!(result, 11579);
-//     assert_eq!(after.as_nanos(), 0);
-// }

@@ -530,8 +530,8 @@ pub fn advent_8_part_2(input: String) -> i32 {
 
     for i in 0..code.len() {
         let hack = match code[i] {
-            Some(Op::Jmp(n)) => Some(Op::Nop(n)),
-            Some(Op::Nop(n)) => Some(Op::Jmp(n)),
+            Some(Op::Jmp(n)) if n < 0 => Some(Op::Nop(n)),
+            Some(Op::Nop(n)) if n > 0 => Some(Op::Jmp(n)),
             _ => continue,
         };
 

@@ -424,10 +424,6 @@ pub fn advent_7_part_1(input: String) -> usize {
     let mut colors: HashSet<&str> = HashSet::new();
 
     while let Some(color) = todo.pop() {
-        if colors.contains(color) {
-            continue;
-        }
-
         if let Some(parents) = lookup.get(color) {
             for parent in parents {
                 if !colors.insert(parent) {

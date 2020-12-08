@@ -415,13 +415,16 @@ pub fn advent_7_part_1(input: String) -> usize {
         let (container, contains) = line.split_once(" bags contain ").expect("!");
         contains.split(", ").for_each(|bags| {
             if let Ok(Name(name)) = bags.parse::<Name>() {
-                lookup.entry(name).or_insert(Vec::new()).push(container);
+                lookup
+                    .entry(name)
+                    .or_insert(Vec::with_capacity(8))
+                    .push(container);
             }
         });
     });
 
     let mut todo = vec!["shiny gold"];
-    let mut colors: HashSet<&str> = HashSet::new();
+    let mut colors: HashSet<&str> = HashSet::with_capacity(lookup.len());
 
     while let Some(color) = todo.pop() {
         if let Some(parents) = lookup.get(color) {

@@ -423,8 +423,11 @@ pub fn advent_7_part_1(input: String) -> usize {
     let mut todo = vec!["shiny gold"];
     let mut colors: HashSet<&str> = HashSet::new();
 
-    while !todo.is_empty() {
-        let color = todo.pop().expect("!");
+    while let Some(color) = todo.pop() {
+        if colors.contains(color) {
+            continue;
+        }
+
         if let Some(parents) = lookup.get(color) {
             for parent in parents {
                 if !colors.insert(parent) {

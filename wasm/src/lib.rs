@@ -587,7 +587,7 @@ pub fn advent_9_part_2(input: String) -> u64 {
             acc += numbers[j];
 
             if acc == invalid_number {
-                let (minimum, maximum) = numbers[i..j]
+                let (minimum, maximum) = numbers[i..=j]
                     .into_iter()
                     .fold((u64::MAX, 0_u64), |(minimum, maximum), n| {
                         (minimum.min(*n), maximum.max(*n))

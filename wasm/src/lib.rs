@@ -6,6 +6,7 @@ extern crate wasm_bindgen;
 
 use std::{
     collections::{HashMap, HashSet},
+    convert::identity,
     time::Instant,
 };
 
@@ -544,4 +545,65 @@ pub fn advent_8_part_2(input: String) -> i32 {
     }
 
     panic!("Didn't quite work, did it?")
+}
+
+#[wasm_bindgen(js_name = "advent9Part1")]
+pub fn advent_9_part_1(input: String) -> u64 {
+    let numbers: Vec<u64> = input
+        .lines()
+        .map(|line| line.parse::<u64>().expect("!"))
+        .collect();
+
+    let lookup = numbers.iter().collect::<HashSet<_>>();
+
+    for (i, n) in numbers[25..].iter().enumerate() {
+        if numbers[i..i + 25]
+            .iter()
+            .filter(|m| m < &n)
+            .any(|m| lookup.contains(&(n - m)))
+        {
+            continue;
+        }
+
+        return *n;
+    }
+
+    panic!("You should've found the number by now!")
+}
+
+#[wasm_bindgen(js_name = "advent9Part2")]
+pub fn advent_9_part_2(input: String) -> u64 {
+    let numbers: Vec<u64> = input
+        .lines()
+        .map(|line| line.parse::<u64>().expect("!"))
+        .collect();
+    let invalid_number = advent_9_part_1(input);
+    let mut set = vec![None; numbers.len()];
+    for i in 0..numbers.len() {
+        let mut acc = 0;
+        for j in i..numbers.len() {
+            let n = numbers[j];
+            acc += n;
+            let delta = j - i;
+            set[delta] = Some(n);
+            set[delta + 1] = None;
+
+            if acc == invalid_number {
+                let (minimum, maximum) = set
+                    .into_iter()
+                    .take_while(Option::is_some)
+                    .filter_map(identity)
+                    .fold((u64::MAX, 0_u64), |(minimum, maximum), n| {
+                        (minimum.min(n), maximum.max(n))
+                    });
+
+                return minimum + maximum;
+            }
+            if acc > invalid_number {
+                break;
+            }
+        }
+    }
+
+    panic!("You should've found the range by now!")
 }

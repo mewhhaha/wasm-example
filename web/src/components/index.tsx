@@ -6,6 +6,8 @@ export * from "./Advent5";
 export * from "./Advent6";
 export * from "./Advent7";
 export * from "./Advent8";
+export * from "./Advent9";
+export * from "./Advent10";
 export * from "./MapFilterTest";
 export * from "./PrimesTest";
 export * from "./ReduceTest";

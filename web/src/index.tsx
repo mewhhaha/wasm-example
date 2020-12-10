@@ -25,8 +25,11 @@ import {
   Advent7Part2,
   Advent8Part1,
   Advent8Part2,
+  Advent10Part1,
+  Advent10Part2,
+  Advent9Part1,
+  Advent9Part2,
 } from "./components";
-import { Advent9Part1, Advent9Part2 } from "./components/Advent9";
 
 const appStyle: React.CSSProperties = {
   display: "flex",
@@ -61,6 +64,8 @@ const App: React.FC = () => {
       <Advent8Part2 />
       <Advent9Part1 />
       <Advent9Part2 />
+      <Advent10Part1 />
+      <Advent10Part2 />
     </div>
   );
 };

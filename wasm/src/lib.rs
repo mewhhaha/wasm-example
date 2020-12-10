@@ -603,3 +603,73 @@ pub fn advent_9_part_2(input: String) -> u64 {
 
     panic!("You should've found the range by now!")
 }
+
+#[wasm_bindgen(js_name = "advent10Part1")]
+pub fn advent_10_part_1(input: String) -> u32 {
+    let mut numbers: Vec<u32> = input
+        .lines()
+        .map(|line| line.parse::<u32>().expect("!"))
+        .collect();
+
+    numbers.push(0);
+    numbers.sort();
+
+    let mut one_diffs = 0;
+    let mut three_diffs = 0;
+
+    numbers
+        .iter()
+        .skip(1)
+        .zip(numbers.iter())
+        .for_each(|(x, y)| match x - y {
+            1 => one_diffs += 1,
+            3 => three_diffs += 1,
+            _ => (),
+        });
+
+    one_diffs * (three_diffs + 1)
+}
+
+fn count_possibilities(i: usize, numbers: &Vec<u64>, memo: &mut Vec<Option<u64>>) -> u64 {
+    match memo[i] {
+        Some(computed) => computed,
+        _ if i == numbers.len() - 1 => 1,
+        _ => {
+            let curr = &numbers[i];
+            let mut acc = 0;
+            for j in i + 1..numbers.len().min(i + 4) {
+                let next = &numbers[j];
+                println!("{} - {} - {}", next, curr, next - curr);
+                if next - curr > 3 {
+                    break;
+                }
+                acc += count_possibilities(j, numbers, memo);
+            }
+
+            memo[i] = Some(acc);
+            acc
+        }
+    }
+}
+
+#[wasm_bindgen(js_name = "advent10Part2")]
+pub fn advent_10_part_2(input: String) -> u64 {
+    let mut numbers: Vec<u64> = input
+        .lines()
+        .map(|line| line.parse::<u64>().expect("!"))
+        .collect();
+
+    numbers.push(0);
+    numbers.sort();
+
+    let mut memo = vec![None; numbers.len()];
+
+    count_possibilities(0, &numbers, &mut memo)
+}
+
+#[test]
+fn test() {
+    let input = include_str!("./data.txt").to_string();
+    let result = advent_10_part_2(input);
+    assert_eq!(result, 19208)
+}

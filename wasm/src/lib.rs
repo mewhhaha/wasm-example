@@ -667,9 +667,9 @@ pub fn advent_10_part_2(input: String) -> u64 {
     count_possibilities(0, &numbers, &mut memo)
 }
 
-#[test]
-fn test() {
-    let input = include_str!("./data.txt").to_string();
-    let result = advent_10_part_2(input);
-    assert_eq!(result, 19208)
-}
+// #[test]
+// fn test() {
+//     let input = include_str!("./data.txt").to_string();
+//     let result = advent_10_part_2(input);
+//     assert_eq!(result, 19208)
+// }

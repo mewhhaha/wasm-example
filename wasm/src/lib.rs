@@ -676,7 +676,7 @@ enum Seat {
     Occupied,
 }
 
-fn is_seat_occupied(seat: &&Option<Seat>) -> bool {
+fn is_seat_occupied(seat: &Option<Seat>) -> bool {
     match seat {
         Some(Seat::Occupied) => true,
         _ => false,
@@ -697,22 +697,23 @@ const KERNEL: [(isize, isize); 8] = [
 fn num_adjacent_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) -> usize {
     KERNEL
         .iter()
-        .filter_map(|(oy, ox)| {
+        .filter(|(oy, ox)| {
             let j = i as isize + oy * width as isize + ox;
 
             match (i % width) as isize + ox {
-                x if x < 0 || x >= width as isize => None,
-                _ => placements.get(j as usize),
+                x if x < 0 || x >= width as isize || j < 0 || j >= placements.len() as isize => {
+                    false
+                }
+                _ => is_seat_occupied(&placements[j as usize]),
             }
         })
-        .filter(is_seat_occupied)
         .count()
 }
 
 fn num_seen_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) -> usize {
     KERNEL
         .iter()
-        .filter_map(|(oy, ox)| {
+        .filter(|(oy, ox)| {
             let mut cy = *oy;
             let mut cx = *ox;
             loop {
@@ -724,19 +725,18 @@ fn num_seen_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) -> usi
                         || j < 0
                         || j >= placements.len() as isize =>
                     {
-                        return None
+                        return false
                     }
                     _ => match &placements[j as usize] {
                         None => {
                             cy += oy;
                             cx += ox;
                         }
-                        s => return Some(s),
+                        s => return is_seat_occupied(s),
                     },
                 }
             }
         })
-        .filter(is_seat_occupied)
         .count()
 }
 
@@ -804,7 +804,7 @@ pub fn advent_11_part_2(input: String) -> u32 {
 fn test() {
     let input = include_str!("./data.txt").to_string();
     let before = Instant::now();
-    let result = advent_11_part_1(input);
+    let result = advent_11_part_2(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
     assert_eq!(result, 26)

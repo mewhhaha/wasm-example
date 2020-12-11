@@ -774,7 +774,7 @@ where
                 occupied_seats += 1;
             }
 
-            if updated != *seat {
+            if &updated != seat {
                 changed = true;
             }
 

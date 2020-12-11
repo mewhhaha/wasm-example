@@ -5,8 +5,11 @@
 extern crate wasm_bindgen;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{hash_map::DefaultHasher, HashMap, HashSet},
     convert::identity,
+    fmt,
+    hash::{Hash, Hasher},
+    slice,
     time::Instant,
 };
 
@@ -667,9 +670,142 @@ pub fn advent_10_part_2(input: String) -> u64 {
     count_possibilities(0, &numbers, &mut memo)
 }
 
-// #[test]
-// fn test() {
-//     let input = include_str!("./data.txt").to_string();
-//     let result = advent_10_part_2(input);
-//     assert_eq!(result, 19208)
-// }
+#[derive(Hash, Copy, Clone, PartialEq, Eq, Debug)]
+enum Seat {
+    Vacant,
+    Occupied,
+}
+
+fn is_seat_occupied(seat: &&Option<Seat>) -> bool {
+    match seat {
+        Some(Seat::Occupied) => true,
+        _ => false,
+    }
+}
+
+const KERNEL: [(isize, isize); 8] = [
+    (-1, -1),
+    (-1, 0),
+    (0, -1),
+    (1, 1),
+    (1, -1),
+    (-1, 1),
+    (1, 0),
+    (0, 1),
+];
+
+fn num_adjacent_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) -> usize {
+    KERNEL
+        .iter()
+        .filter_map(|(oy, ox)| {
+            let j = i as isize + oy * width as isize + ox;
+
+            match (i % width) as isize + ox {
+                x if x < 0 || x >= width as isize => None,
+                _ => placements.get(j as usize),
+            }
+        })
+        .filter(is_seat_occupied)
+        .count()
+}
+
+fn num_seen_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) -> usize {
+    KERNEL
+        .iter()
+        .filter_map(|(oy, ox)| {
+            let mut cy = *oy;
+            let mut cx = *ox;
+            loop {
+                let j = i as isize + cy * width as isize + cx;
+
+                match (i % width) as isize + cx {
+                    x if x < 0
+                        || x >= width as isize
+                        || j < 0
+                        || j >= placements.len() as isize =>
+                    {
+                        return None
+                    }
+                    _ => match &placements[j as usize] {
+                        None => {
+                            cy += oy;
+                            cx += ox;
+                        }
+                        s => return Some(s),
+                    },
+                }
+            }
+        })
+        .filter(is_seat_occupied)
+        .count()
+}
+
+fn stabilize_seat_generations<F>(input: String, tolerance: usize, look_at_seats: F) -> u32
+where
+    F: Fn(usize, &Vec<Option<Seat>>, usize) -> usize,
+{
+    let width = input.split_once('\n').map_or(0, |(f, _)| f.len());
+    let mut placements: Vec<_> = input
+        .chars()
+        .filter_map(|c| match c {
+            'L' => Some(Some(Seat::Vacant)),
+            '.' => Some(None),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    let mut buffer = placements.clone();
+    let mut occupied_seats;
+
+    loop {
+        let mut changed = false;
+        occupied_seats = 0;
+
+        for (i, seat) in placements.iter().enumerate() {
+            let num_occupied = look_at_seats(width, &placements, i);
+
+            let updated = match seat {
+                Some(Seat::Vacant) if num_occupied == 0 => Some(Seat::Occupied),
+                Some(Seat::Occupied) if num_occupied >= tolerance => Some(Seat::Vacant),
+                _ => seat.clone(),
+            };
+
+            if let Some(Seat::Occupied) = updated {
+                occupied_seats += 1;
+            }
+
+            if updated != *seat {
+                changed = true;
+            }
+
+            buffer[i] = updated;
+        }
+
+        std::mem::swap(&mut placements, &mut buffer);
+
+        if !changed {
+            break;
+        }
+    }
+
+    occupied_seats
+}
+
+#[wasm_bindgen(js_name = "advent11Part1")]
+pub fn advent_11_part_1(input: String) -> u32 {
+    stabilize_seat_generations(input, 4, num_adjacent_seats)
+}
+
+#[wasm_bindgen(js_name = "advent11Part2")]
+pub fn advent_11_part_2(input: String) -> u32 {
+    stabilize_seat_generations(input, 5, num_seen_seats)
+}
+#[test]
+fn test() {
+    let input = include_str!("./data.txt").to_string();
+    let before = Instant::now();
+    let result = advent_11_part_1(input);
+    let after = before.elapsed();
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 26)
+}

@@ -10,7 +10,7 @@ export const Advent4Part1 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let passports: number;
+        let result: number;
 
         const js = () => {
           const requiredFields = new Set([
@@ -34,11 +34,11 @@ export const Advent4Part1 = () => {
         };
 
         const wasm = () => {
-          passports = advent4Part1(input);
+          result = advent4Part1(input);
         };
 
         const after = () => {
-          setResult(passports.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];
@@ -57,7 +57,7 @@ export const Advent4Part2 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let passports: number;
+        let result: number;
 
         const range = (from: number, to: number) => (value: string) => {
           let n = Number.parseInt(value);
@@ -122,11 +122,11 @@ export const Advent4Part2 = () => {
         };
 
         const wasm = () => {
-          passports = advent4Part2(input);
+          result = advent4Part2(input);
         };
 
         const after = () => {
-          setResult(passports.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];

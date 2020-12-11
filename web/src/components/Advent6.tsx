@@ -47,7 +47,7 @@ export const Advent6Part2 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let unanimousGroupAnswers: number;
+        let result: number;
 
         const js = () => {
           const intersection = (mut: Set<string>, inc: Set<string>) => {
@@ -72,11 +72,11 @@ export const Advent6Part2 = () => {
         };
 
         const wasm = () => {
-          unanimousGroupAnswers = advent6Part2(input);
+          result = advent6Part2(input);
         };
 
         const after = () => {
-          setResult(unanimousGroupAnswers.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];
@@ -95,16 +95,16 @@ export const Advent6Part2Bits = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let unanimousGroupAnswers: number;
+        let result: number;
 
         const js = null;
 
         const wasm = () => {
-          unanimousGroupAnswers = advent6Part2Bits(input);
+          result = advent6Part2Bits(input);
         };
 
         const after = () => {
-          setResult(unanimousGroupAnswers.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];

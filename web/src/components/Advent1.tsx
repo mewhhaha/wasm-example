@@ -14,7 +14,7 @@ export const Advent1Part1 = () => {
           return Number.parseInt(x);
         });
 
-        let product: number;
+        let result: number;
 
         const js = () => {
           let year = 2020;
@@ -29,11 +29,11 @@ export const Advent1Part1 = () => {
         };
 
         const wasm = () => {
-          product = advent1Part1(new Uint32Array(numbers));
+          result = advent1Part1(new Uint32Array(numbers));
         };
 
         const after = () => {
-          setResult(product.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];
@@ -59,7 +59,7 @@ export const Advent1Part2 = () => {
           })
           .sort(() => 0.5 - Math.random());
 
-        let product: number = 0;
+        let result: number = 0;
 
         const js = () => {
           let year = 2020;
@@ -77,11 +77,11 @@ export const Advent1Part2 = () => {
         };
 
         const wasm = () => {
-          product = advent1Part2(new Uint32Array(numbers));
+          result = advent1Part2(new Uint32Array(numbers));
         };
 
         const after = () => {
-          setResult(product.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];

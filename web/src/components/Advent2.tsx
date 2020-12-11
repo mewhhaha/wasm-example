@@ -10,7 +10,7 @@ export const Advent2Part1 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let numberOfPasswords: number = 0;
+        let result: number = 0;
 
         const js = () => {
           const isValid = ({
@@ -56,11 +56,11 @@ export const Advent2Part1 = () => {
         };
 
         const wasm = () => {
-          numberOfPasswords = advent2Part1(input);
+          result = advent2Part1(input);
         };
 
         const after = () => {
-          setResult(numberOfPasswords.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];
@@ -79,7 +79,7 @@ export const Advent2Part2 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let numberOfPasswords: number = 0;
+        let result: number = 0;
 
         const js = () => {
           const isValid = ({
@@ -123,11 +123,11 @@ export const Advent2Part2 = () => {
         };
 
         const wasm = () => {
-          numberOfPasswords = advent2Part2(input);
+          result = advent2Part2(input);
         };
 
         const after = () => {
-          setResult(numberOfPasswords.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];

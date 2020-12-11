@@ -10,7 +10,7 @@ export const Advent3Part1 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let trees: number;
+        let result: number;
 
         const js = () => {
           const carta = input.split(/\r?\n/);
@@ -34,11 +34,11 @@ export const Advent3Part1 = () => {
         };
 
         const wasm = () => {
-          trees = advent3Part1(input);
+          result = advent3Part1(input);
         };
 
         const after = () => {
-          setResult(trees.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];
@@ -57,7 +57,7 @@ export const Advent3Part2 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let trees: number;
+        let result: number;
 
         const js = () => {
           const carta = input.split(/\r?\n/);
@@ -90,11 +90,11 @@ export const Advent3Part2 = () => {
         };
 
         const wasm = () => {
-          trees = advent3Part2(input);
+          result = advent3Part2(input);
         };
 
         const after = () => {
-          setResult(trees.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];

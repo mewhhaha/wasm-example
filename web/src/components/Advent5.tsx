@@ -10,16 +10,16 @@ export const Advent5Part1 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let seatId: number;
+        let result: number;
 
         const js = null;
 
         const wasm = () => {
-          seatId = advent5Part1(input);
+          result = advent5Part1(input);
         };
 
         const after = () => {
-          setResult(seatId.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];
@@ -38,16 +38,16 @@ export const Advent5Part2 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let seatId: number;
+        let result: number;
 
         const js = null;
 
         const wasm = () => {
-          seatId = advent5Part2(input);
+          result = advent5Part2(input);
         };
 
         const after = () => {
-          setResult(seatId.toString());
+          setResult(result.toString());
         };
 
         return [js, wasm, after];

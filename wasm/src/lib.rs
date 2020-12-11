@@ -767,7 +767,7 @@ where
             let updated = match seat {
                 Some(Seat::Vacant) if num_occupied == 0 => Some(Seat::Occupied),
                 Some(Seat::Occupied) if num_occupied >= tolerance => Some(Seat::Vacant),
-                _ => seat.clone(),
+                _ => *seat,
             };
 
             if let Some(Seat::Occupied) = updated {

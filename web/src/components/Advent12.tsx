@@ -2,8 +2,8 @@ import { useState } from "react";
 import { wasmCrate } from "../helpers/wasm";
 import { Test } from "./Test";
 
-export const Advent11Part1 = () => {
-  const { advent11Part1 } = wasmCrate();
+export const Advent12Part1 = () => {
+  const { advent12Part1 } = wasmCrate();
   const [result, setResult] = useState<null | string>(null);
   return (
     <Test
@@ -15,7 +15,7 @@ export const Advent11Part1 = () => {
         const js = null;
 
         const wasm = () => {
-          result = advent11Part1(input);
+          result = advent12Part1(input);
         };
 
         const after = () => {
@@ -24,14 +24,14 @@ export const Advent11Part1 = () => {
 
         return [js, wasm, after];
       }}
-      label="Advent of Code 11, Part 1"
+      label="Advent of Code 12, Part 1"
       result={result}
     />
   );
 };
 
-export const Advent11Part2 = () => {
-  const { advent11Part2 } = wasmCrate();
+export const Advent12Part2 = () => {
+  const { advent12Part2 } = wasmCrate();
   const [result, setResult] = useState<null | string>(null);
   return (
     <Test
@@ -43,7 +43,7 @@ export const Advent11Part2 = () => {
         const js = null;
 
         const wasm = () => {
-          number = advent11Part2(input);
+          number = advent12Part2(input);
         };
 
         const after = () => {
@@ -52,7 +52,7 @@ export const Advent11Part2 = () => {
 
         return [js, wasm, after];
       }}
-      label="Advent of Code 11, Part 2"
+      label="Advent of Code 12, Part 2"
       result={result}
     />
   );

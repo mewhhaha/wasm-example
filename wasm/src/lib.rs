@@ -9,6 +9,7 @@ use std::{
     convert::identity,
     fmt,
     hash::{Hash, Hasher},
+    ops::{Add, Mul},
     slice,
     time::Instant,
 };
@@ -800,12 +801,169 @@ pub fn advent_11_part_1(input: String) -> u32 {
 pub fn advent_11_part_2(input: String) -> u32 {
     stabilize_seat_generations(input, 5, num_seen_seats)
 }
+
+#[derive(Copy, Clone)]
+struct Point<A> {
+    x: A,
+    y: A,
+}
+
+impl<A: Add<Output = A>> Add for Point<A> {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl<A: Mul<Output = A>> Mul for Point<A> {
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self {
+        Self {
+            x: self.x * other.x,
+            y: self.y * other.y,
+        }
+    }
+}
+
+impl<A: Mul<Output = A> + Copy> Mul<A> for Point<A> {
+    type Output = Self;
+
+    fn mul(self, other: A) -> Self {
+        Self {
+            x: self.x * other,
+            y: self.y * other,
+        }
+    }
+}
+
+#[derive(FromStr, PartialEq, Clone)]
+enum Ferry {
+    #[display("N{0}")]
+    North(i32),
+    #[display("S{0}")]
+    South(i32),
+    #[display("E{0}")]
+    East(i32),
+    #[display("W{0}")]
+    West(i32),
+    #[display("L{0}")]
+    Left(i32),
+    #[display("R{0}")]
+    Right(i32),
+    #[display("F{0}")]
+    Forward(i32),
+}
+
+fn modulo(dividend: i32, divisor: i32) -> i32 {
+    (dividend % divisor + divisor) % divisor
+}
+
+fn manhattan(point: Point<i32>) -> u32 {
+    (point.x.abs() + point.y.abs()) as u32
+}
+
+#[wasm_bindgen(js_name = "advent12Part1")]
+pub fn advent_12_part_1(input: String) -> u32 {
+    let instructions = input.lines().map(|line| line.parse::<Ferry>().expect("!"));
+
+    let mut angle = 90;
+    let mut position = Point { x: 0, y: 0 };
+
+    instructions.for_each(|instruction| match instruction {
+        Ferry::North(d) => {
+            position.y += d;
+        }
+        Ferry::South(d) => {
+            position.y -= d;
+        }
+        Ferry::East(d) => {
+            position.x += d;
+        }
+        Ferry::West(d) => {
+            position.x -= d;
+        }
+        Ferry::Left(d) => angle = modulo(angle - d, 360),
+        Ferry::Right(d) => angle = modulo(angle + d, 360),
+        Ferry::Forward(d) => match angle {
+            0 => position.y += d,
+            90 => position.x += d,
+            180 => position.y -= d,
+            270 => position.x -= d,
+            _ => panic!("Non-aligned angle!"),
+        },
+    });
+
+    manhattan(position)
+}
+
+fn swap<A: Copy>(point: &Point<A>) -> Point<A> {
+    Point {
+        x: point.y,
+        y: point.x,
+    }
+}
+
+fn turn_waypoint(waypoint: &mut Point<i32>, angle: i32) {
+    let times = match angle.abs() {
+        0 => 0,
+        90 => 1,
+        180 => 2,
+        270 => 3,
+        _ => panic!("Non-valid angle"),
+    };
+
+    let signs = if angle < 0 {
+        Point { x: -1, y: 1 }
+    } else {
+        Point { x: 1, y: -1 }
+    };
+
+    for _ in 0..times {
+        *waypoint = swap(waypoint) * signs;
+    }
+}
+
+#[wasm_bindgen(js_name = "advent12Part2")]
+pub fn advent_12_part_2(input: String) -> u32 {
+    let instructions = input.lines().map(|line| line.parse::<Ferry>().expect("!"));
+
+    let mut waypoint = Point { x: 10, y: 1 };
+    let mut position = Point { x: 0, y: 0 };
+
+    instructions.for_each(|instruction| match instruction {
+        Ferry::North(d) => {
+            waypoint.y += d;
+        }
+        Ferry::South(d) => {
+            waypoint.y -= d;
+        }
+        Ferry::East(d) => {
+            waypoint.x += d;
+        }
+        Ferry::West(d) => {
+            waypoint.x -= d;
+        }
+        Ferry::Left(d) => turn_waypoint(&mut waypoint, -d),
+        Ferry::Right(d) => turn_waypoint(&mut waypoint, d),
+        Ferry::Forward(d) => {
+            position = position + waypoint * d;
+        }
+    });
+
+    manhattan(position)
+}
+
 #[test]
 fn test() {
     let input = include_str!("./data.txt").to_string();
     let before = Instant::now();
-    let result = advent_11_part_2(input);
+    let result = advent_12_part_2(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 26)
+    assert_eq!(result, 286)
 }

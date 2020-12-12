@@ -9,6 +9,7 @@ export * from "./Advent8";
 export * from "./Advent9";
 export * from "./Advent10";
 export * from "./Advent11";
+export * from "./Advent12";
 export * from "./MapFilterTest";
 export * from "./PrimesTest";
 export * from "./ReduceTest";

@@ -1030,7 +1030,7 @@ fn test_part_2() {
     let before = std::time::Instant::now();
     let result = advent_13_part_2(input);
     let after = before.elapsed();
-    println!("{:?}", after.as_millis());
+    println!("{:?}", after.as_nanos());
     assert_eq!(result, 1068781)
 }
 

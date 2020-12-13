@@ -958,6 +958,15 @@ pub fn advent_12_part_2(input: String) -> u32 {
     manhattan(position)
 }
 
+#[wasm_bindgen(js_name = "advent13Part1")]
+pub fn advent_13_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent13Part2")]
+pub fn advent_13_part_2(input: String) -> u32 {
+    1
+}
+
 #[test]
 fn test() {
     let input = include_str!("./data.txt").to_string();
@@ -966,4 +975,100 @@ fn test() {
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
     assert_eq!(result, 286)
+}
+
+#[wasm_bindgen(js_name = "advent14Part1")]
+pub fn advent_14_part_1(input: String) -> u32 {
+    1
+}
+
+#[wasm_bindgen(js_name = "advent14Part2")]
+pub fn advent_14_part_2(input: String) -> u32 {
+    1
+}
+
+#[wasm_bindgen(js_name = "advent15Part1")]
+pub fn advent_15_part_1(input: String) -> u32 {
+    1
+}
+
+#[wasm_bindgen(js_name = "advent15Part2")]
+pub fn advent_15_part_2(input: String) -> u32 {
+    1
+}
+
+#[wasm_bindgen(js_name = "advent16Part1")]
+pub fn advent_16_part_1(input: String) -> u32 {
+    1
+}
+
+#[wasm_bindgen(js_name = "advent16Part2")]
+pub fn advent_16_part_2(input: String) -> u32 {
+    1
+}
+
+#[wasm_bindgen(js_name = "advent17Part1")]
+pub fn advent_17_part_1(input: String) -> u32 {
+    1
+}
+
+#[wasm_bindgen(js_name = "advent17Part2")]
+pub fn advent_17_part_2(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent18Part1")]
+pub fn advent_18_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent18Part2")]
+pub fn advent_18_part_2(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent19Part1")]
+pub fn advent_19_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent19Part2")]
+pub fn advent_19_part_2(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent20Part1")]
+pub fn advent_20_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent20Part2")]
+pub fn advent_20_part_2(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent21Part1")]
+pub fn advent_21_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent21Part2")]
+pub fn advent_21_part_2(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent22Part1")]
+pub fn advent_22_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent22Part2")]
+pub fn advent_22_part_2(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent23Part1")]
+pub fn advent_23_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent23Part2")]
+pub fn advent_23_part_2(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent24Part1")]
+pub fn advent_24_part_1(input: String) -> u32 {
+    1
+}
+#[wasm_bindgen(js_name = "advent24Part2")]
+pub fn advent_24_part_2(input: String) -> u32 {
+    1
 }

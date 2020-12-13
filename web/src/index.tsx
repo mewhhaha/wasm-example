@@ -33,6 +33,30 @@ import {
   Advent11Part2,
   Advent12Part1,
   Advent12Part2,
+  Advent13Part1,
+  Advent13Part2,
+  Advent14Part1,
+  Advent14Part2,
+  Advent15Part1,
+  Advent15Part2,
+  Advent16Part1,
+  Advent16Part2,
+  Advent17Part1,
+  Advent17Part2,
+  Advent18Part1,
+  Advent18Part2,
+  Advent19Part1,
+  Advent19Part2,
+  Advent20Part1,
+  Advent20Part2,
+  Advent21Part1,
+  Advent21Part2,
+  Advent22Part1,
+  Advent22Part2,
+  Advent23Part1,
+  Advent23Part2,
+  Advent24Part1,
+  Advent24Part2,
 } from "./components";
 
 const appStyle: React.CSSProperties = {
@@ -74,6 +98,30 @@ const App: React.FC = () => {
       <Advent11Part2 />
       <Advent12Part1 />
       <Advent12Part2 />
+      <Advent13Part1 />
+      <Advent13Part2 />
+      <Advent14Part1 />
+      <Advent14Part2 />
+      <Advent15Part1 />
+      <Advent15Part2 />
+      <Advent16Part1 />
+      <Advent16Part2 />
+      <Advent17Part1 />
+      <Advent17Part2 />
+      <Advent18Part1 />
+      <Advent18Part2 />
+      <Advent19Part1 />
+      <Advent19Part2 />
+      <Advent20Part1 />
+      <Advent20Part2 />
+      <Advent21Part1 />
+      <Advent21Part2 />
+      <Advent22Part1 />
+      <Advent22Part2 />
+      <Advent23Part1 />
+      <Advent23Part2 />
+      <Advent24Part1 />
+      <Advent24Part2 />
     </div>
   );
 };

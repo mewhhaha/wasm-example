@@ -987,7 +987,7 @@ pub fn advent_13_part_1(input: String) -> u32 {
 
 #[wasm_bindgen(js_name = "advent13Part2")]
 pub fn advent_13_part_2(input: String) -> u64 {
-    let mut buses = input
+    let buses = input
         .split_once('\n')
         .map(|(_, raw_schedule)| {
             raw_schedule

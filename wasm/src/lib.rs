@@ -5,13 +5,9 @@
 extern crate wasm_bindgen;
 
 use std::{
-    collections::{hash_map::DefaultHasher, HashMap, HashSet},
-    convert::identity,
-    fmt,
-    hash::{Hash, Hasher},
+    collections::{HashMap, HashSet},
+    hash::Hash,
     ops::{Add, Mul},
-    slice,
-    time::Instant,
 };
 
 use parse_display::{Display, FromStr};
@@ -960,115 +956,198 @@ pub fn advent_12_part_2(input: String) -> u32 {
 
 #[wasm_bindgen(js_name = "advent13Part1")]
 pub fn advent_13_part_1(input: String) -> u32 {
-    1
+    let (departure, buses) = input
+        .split_once('\n')
+        .map(|(raw_departure, raw_schedule)| {
+            let departure = raw_departure.parse::<u32>().expect("!");
+            let buses = raw_schedule.split(',').filter_map(|c| {
+                if c == "x" {
+                    None
+                } else {
+                    Some(c.parse::<u32>().unwrap())
+                }
+            });
+            (departure, buses)
+        })
+        .expect("!");
+
+    let closest_departure = buses
+        .map(|bus| {
+            let wait_time = bus - (departure % bus);
+
+            (bus, wait_time)
+        })
+        .min_by(|x, y| x.1.cmp(&y.1));
+
+    match closest_departure {
+        Some((bus, wait_time)) => bus * wait_time,
+        None => panic!("There should've been a bus!"),
+    }
 }
+
 #[wasm_bindgen(js_name = "advent13Part2")]
-pub fn advent_13_part_2(input: String) -> u32 {
-    1
+pub fn advent_13_part_2(input: String) -> u64 {
+    let mut buses = input
+        .split_once('\n')
+        .map(|(_, raw_schedule)| {
+            raw_schedule
+                .split(',')
+                .enumerate()
+                .filter_map(|(offset, str)| str.parse::<u64>().ok().map(|bus| (offset, bus)))
+        })
+        .expect("!")
+        .collect::<Vec<_>>();
+
+    let (_, mut step_size) = buses[0];
+
+    let mut timestamp = 0;
+
+    for (offset, bus) in buses.iter().skip(1) {
+        let remainder = (bus - (*offset as u64 % bus)) % bus;
+        while timestamp % bus != remainder {
+            timestamp += step_size;
+        }
+
+        step_size = bus * step_size;
+    }
+
+    timestamp
 }
 
 #[test]
-fn test() {
+fn test_part_1() {
     let input = include_str!("./data.txt").to_string();
-    let before = Instant::now();
-    let result = advent_12_part_2(input);
+    let before = std::time::Instant::now();
+    let result = advent_13_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 286)
+    assert_eq!(result, 295)
+}
+
+#[test]
+fn test_part_2() {
+    let input = include_str!("./data.txt").to_string();
+    let before = std::time::Instant::now();
+    let result = advent_13_part_2(input);
+    let after = before.elapsed();
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 1068781)
 }
 
 #[wasm_bindgen(js_name = "advent14Part1")]
 pub fn advent_14_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 
 #[wasm_bindgen(js_name = "advent14Part2")]
 pub fn advent_14_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 
 #[wasm_bindgen(js_name = "advent15Part1")]
 pub fn advent_15_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 
 #[wasm_bindgen(js_name = "advent15Part2")]
 pub fn advent_15_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 
 #[wasm_bindgen(js_name = "advent16Part1")]
 pub fn advent_16_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 
 #[wasm_bindgen(js_name = "advent16Part2")]
 pub fn advent_16_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 
 #[wasm_bindgen(js_name = "advent17Part1")]
 pub fn advent_17_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 
 #[wasm_bindgen(js_name = "advent17Part2")]
 pub fn advent_17_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent18Part1")]
 pub fn advent_18_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent18Part2")]
 pub fn advent_18_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent19Part1")]
 pub fn advent_19_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent19Part2")]
 pub fn advent_19_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent20Part1")]
 pub fn advent_20_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent20Part2")]
 pub fn advent_20_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent21Part1")]
 pub fn advent_21_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent21Part2")]
 pub fn advent_21_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent22Part1")]
 pub fn advent_22_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent22Part2")]
 pub fn advent_22_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent23Part1")]
 pub fn advent_23_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent23Part2")]
 pub fn advent_23_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent24Part1")]
 pub fn advent_24_part_1(input: String) -> u32 {
+    println!("{}", input);
     1
 }
 #[wasm_bindgen(js_name = "advent24Part2")]
 pub fn advent_24_part_2(input: String) -> u32 {
+    println!("{}", input);
     1
 }

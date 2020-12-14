@@ -1014,36 +1014,151 @@ pub fn advent_13_part_2(input: String) -> u64 {
     timestamp
 }
 
+#[derive(FromStr, PartialEq)]
+enum Init {
+    #[display("mask = {0}")]
+    Mask(String),
+    #[display("mem[{0}] = {1}")]
+    Mem(u64, u64),
+}
+
+struct BitMask {
+    bitset: u64,
+    bitwild: u64,
+}
+
+fn parse_bitmask(mask: String) -> BitMask {
+    let mut bitset = 0;
+    let mut bitwild = 0;
+    for c in mask.chars() {
+        bitset = bitset << 1;
+        bitwild = bitwild << 1;
+        match c {
+            'X' => {
+                bitwild = bitwild | 1;
+            }
+            '1' => {
+                bitset = bitset | 1;
+            }
+            _ => (),
+        }
+    }
+
+    BitMask { bitset, bitwild }
+}
+
+fn apply_bitmask_v1(value: u64, BitMask { bitset, bitwild }: &BitMask) -> u64 {
+    bitset | (value & bitwild)
+}
+
+#[wasm_bindgen(js_name = "advent14Part1")]
+pub fn advent_14_part_1(input: String) -> u64 {
+    let mut mem: HashMap<u64, u64> = HashMap::new();
+    let mut bitmask = BitMask {
+        bitset: 0,
+        bitwild: u64::MAX,
+    };
+
+    let instructions = input.lines().map(|line| line.parse::<Init>().expect("!"));
+
+    for instruction in instructions {
+        match instruction {
+            Init::Mask(raw) => {
+                bitmask = parse_bitmask(raw);
+            }
+            Init::Mem(address, value) => {
+                let masked_value = apply_bitmask_v1(value, &bitmask);
+                mem.insert(address, masked_value);
+            }
+        }
+    }
+
+    mem.values().sum()
+}
+
+fn combinations(vec: Vec<u64>) -> Vec<u64> {
+    let mut values = vec![];
+
+    for i in 0..vec.len() {
+        let v = vec[i];
+        for k in 0..values.len() {
+            let w = values[k];
+            values.push(v + w);
+        }
+        values.push(v);
+    }
+
+    values.sort();
+    values.dedup();
+
+    values
+}
+
+fn apply_bitmask_v2(address: u64, BitMask { bitset, bitwild }: &BitMask) -> Vec<u64> {
+    let set_value = (bitset | address) & !bitwild;
+
+    let mut numbers = vec![0];
+    let mut position = 0;
+    let mut bits = *bitwild;
+    while bits != 0 {
+        if bits & 1 == 1 {
+            numbers.push(1 << position);
+        }
+        position += 1;
+        bits = bits >> 1;
+    }
+
+    combinations(numbers)
+        .into_iter()
+        .map(|n| n | set_value)
+        .collect::<Vec<_>>()
+}
+
+#[wasm_bindgen(js_name = "advent14Part2")]
+pub fn advent_14_part_2(input: String) -> u64 {
+    let mut mem: HashMap<u64, u64> = HashMap::new();
+    let mut bitmask = BitMask {
+        bitset: 0,
+        bitwild: u64::MAX,
+    };
+
+    let instructions = input.lines().map(|line| line.parse::<Init>().expect("!"));
+
+    for instruction in instructions {
+        match instruction {
+            Init::Mask(raw) => {
+                bitmask = parse_bitmask(raw);
+            }
+            Init::Mem(address, value) => {
+                let masked_addresses = apply_bitmask_v2(address, &bitmask);
+                masked_addresses.into_iter().for_each(|masked_address| {
+                    mem.insert(masked_address, value);
+                })
+            }
+        }
+    }
+
+    mem.values().sum()
+}
+
 #[test]
 fn test_part_1() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_13_part_1(input);
+    let result = advent_14_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 295)
+    assert_eq!(result, 165)
 }
 
 #[test]
 fn test_part_2() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_13_part_2(input);
+    let result = advent_14_part_2(input);
     let after = before.elapsed();
-    println!("{:?}", after.as_nanos());
-    assert_eq!(result, 1068781)
-}
-
-#[wasm_bindgen(js_name = "advent14Part1")]
-pub fn advent_14_part_1(input: String) -> u32 {
-    println!("{}", input);
-    1
-}
-
-#[wasm_bindgen(js_name = "advent14Part2")]
-pub fn advent_14_part_2(input: String) -> u32 {
-    println!("{}", input);
-    1
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 208)
 }
 
 #[wasm_bindgen(js_name = "advent15Part1")]

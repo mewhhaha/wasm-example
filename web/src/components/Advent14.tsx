@@ -10,7 +10,7 @@ export const Advent14Part1 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let result: number;
+        let result: BigInt;
 
         const js = null;
 
@@ -38,7 +38,7 @@ export const Advent14Part2 = () => {
       inputType="textarea"
       placeholder="Puzzle input"
       func={(input) => {
-        let number: number;
+        let number: BigInt;
 
         const js = null;
 

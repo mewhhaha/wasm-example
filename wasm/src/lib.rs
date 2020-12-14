@@ -10,6 +10,7 @@ use std::{
     ops::{Add, Mul},
 };
 
+use fxhash::FxHashMap;
 use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -1094,7 +1095,10 @@ fn combinations(vec: Vec<u64>) -> Vec<u64> {
     values
 }
 
-fn apply_bitmask_v2(address: u64, BitMask { bitset, bitwild }: &BitMask) -> Vec<u64> {
+fn apply_bitmask_v2(
+    address: u64,
+    BitMask { bitset, bitwild }: &BitMask,
+) -> impl Iterator<Item = u64> + '_ {
     let set_value = (bitset | address) & !bitwild;
 
     let mut numbers = vec![0];
@@ -1110,13 +1114,12 @@ fn apply_bitmask_v2(address: u64, BitMask { bitset, bitwild }: &BitMask) -> Vec<
 
     combinations(numbers)
         .into_iter()
-        .map(|n| n | set_value)
-        .collect::<Vec<_>>()
+        .map(move |n| n | set_value)
 }
 
 #[wasm_bindgen(js_name = "advent14Part2")]
 pub fn advent_14_part_2(input: String) -> u64 {
-    let mut mem: HashMap<u64, u64> = HashMap::new();
+    let mut mem = FxHashMap::<u64, u64>::default();
     let mut bitmask = BitMask {
         bitset: 0,
         bitwild: u64::MAX,
@@ -1131,7 +1134,7 @@ pub fn advent_14_part_2(input: String) -> u64 {
             }
             Init::Mem(address, value) => {
                 let masked_addresses = apply_bitmask_v2(address, &bitmask);
-                masked_addresses.into_iter().for_each(|masked_address| {
+                masked_addresses.for_each(|masked_address| {
                     mem.insert(masked_address, value);
                 })
             }

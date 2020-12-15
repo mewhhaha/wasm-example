@@ -1145,28 +1145,28 @@ pub fn advent_14_part_2(input: String) -> u64 {
 }
 
 fn play_numbers_game(input: String, until: usize) -> u32 {
-    let mut memory = input
-        .split(',')
-        .enumerate()
-        .map(|(i, word)| {
-            let n = word.parse::<u32>().expect("!");
-            (n, i as u32)
-        })
-        .collect::<FxHashMap<_, _>>();
+    let mut memory: Vec<Option<usize>> = vec![None; until];
+    let mut from = 1;
+
+    input.split(',').enumerate().for_each(|(i, word)| {
+        let n = word.parse::<usize>().expect("!");
+        memory[n] = Some(i);
+        from += 1;
+    });
 
     let mut last_spoken = 0;
 
-    for i in (memory.len() + 1)..until {
-        let spoken = match memory.get(&last_spoken) {
+    for i in from..until {
+        let spoken = match memory[last_spoken] {
             None => 0,
-            Some(k) => (i - 1) as u32 - k,
+            Some(k) => (i - 1) - k,
         };
 
-        memory.insert(last_spoken, i as u32 - 1);
+        memory[last_spoken] = Some(i - 1);
         last_spoken = spoken;
     }
 
-    last_spoken
+    last_spoken as u32
 }
 
 #[wasm_bindgen(js_name = "advent15Part1")]

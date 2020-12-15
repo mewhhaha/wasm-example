@@ -5,7 +5,7 @@
 extern crate wasm_bindgen;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{HashMap, HashSet, VecDeque},
     hash::Hash,
     ops::{Add, Mul},
 };
@@ -1144,36 +1144,43 @@ pub fn advent_14_part_2(input: String) -> u64 {
     mem.values().sum()
 }
 
-#[test]
-fn test_part_1() {
-    let input = include_str!("./data.txt").to_string();
-    let before = std::time::Instant::now();
-    let result = advent_14_part_1(input);
-    let after = before.elapsed();
-    println!("{:?}", after.as_millis());
-    assert_eq!(result, 165)
-}
+fn play_numbers_game(input: String, until: usize) -> u32 {
+    let starting_numbers = input
+        .split(',')
+        .map(|n| n.parse::<u32>().expect("!"))
+        .collect::<Vec<_>>();
+    let mut memory: FxHashMap<u32, (u32, Option<u32>)> = FxHashMap::default();
 
-#[test]
-fn test_part_2() {
-    let input = include_str!("./data.txt").to_string();
-    let before = std::time::Instant::now();
-    let result = advent_14_part_2(input);
-    let after = before.elapsed();
-    println!("{:?}", after.as_millis());
-    assert_eq!(result, 208)
+    starting_numbers.iter().enumerate().for_each(|(i, x)| {
+        memory.insert(*x, (i as u32, None));
+    });
+
+    let mut last_spoken = starting_numbers[starting_numbers.len() - 1];
+    for i in starting_numbers.len()..until {
+        let mem = memory
+            .get(&last_spoken)
+            .expect("Previous value should have been inserted!");
+        let spoken = match mem {
+            (_, None) => 0,
+            (j, Some(k)) => j - k,
+        };
+
+        let previously_spoken = memory.get(&spoken).map(|(j, _)| *j);
+        memory.insert(spoken, (i as u32, previously_spoken));
+        last_spoken = spoken;
+    }
+
+    last_spoken
 }
 
 #[wasm_bindgen(js_name = "advent15Part1")]
 pub fn advent_15_part_1(input: String) -> u32 {
-    println!("{}", input);
-    1
+    play_numbers_game(input, 2020)
 }
 
 #[wasm_bindgen(js_name = "advent15Part2")]
 pub fn advent_15_part_2(input: String) -> u32 {
-    println!("{}", input);
-    1
+    play_numbers_game(input, 30000000)
 }
 
 #[wasm_bindgen(js_name = "advent16Part1")]
@@ -1186,6 +1193,26 @@ pub fn advent_16_part_1(input: String) -> u32 {
 pub fn advent_16_part_2(input: String) -> u32 {
     println!("{}", input);
     1
+}
+
+#[test]
+fn test_part_1() {
+    let input = include_str!("./data.txt").to_string();
+    let before = std::time::Instant::now();
+    let result = advent_16_part_1(input);
+    let after = before.elapsed();
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 436)
+}
+
+#[test]
+fn test_part_2() {
+    let input = include_str!("./data.txt").to_string();
+    let before = std::time::Instant::now();
+    let result = advent_16_part_2(input);
+    let after = before.elapsed();
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 175594)
 }
 
 #[wasm_bindgen(js_name = "advent17Part1")]

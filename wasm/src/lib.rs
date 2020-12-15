@@ -1145,18 +1145,18 @@ pub fn advent_14_part_2(input: String) -> u64 {
 }
 
 fn play_numbers_game(input: String, until: usize) -> u32 {
-    let starting_numbers = input
+    let mut memory = input
         .split(',')
-        .map(|n| n.parse::<u32>().expect("!"))
-        .collect::<Vec<_>>();
-    let mut memory: FxHashMap<u32, (u32, Option<u32>)> = FxHashMap::default();
+        .enumerate()
+        .map(|(i, word)| {
+            let n = word.parse::<u32>().expect("!");
+            (n, (i as u32, None))
+        })
+        .collect::<FxHashMap<_, _>>();
 
-    starting_numbers.iter().enumerate().for_each(|(i, x)| {
-        memory.insert(*x, (i as u32, None));
-    });
+    let mut last_spoken = *memory.iter().last().expect("Should exist a last value!").0;
 
-    let mut last_spoken = starting_numbers[starting_numbers.len() - 1];
-    for i in starting_numbers.len()..until {
+    for i in memory.len()..until {
         let mem = memory
             .get(&last_spoken)
             .expect("Previous value should have been inserted!");
@@ -1165,8 +1165,14 @@ fn play_numbers_game(input: String, until: usize) -> u32 {
             (j, Some(k)) => j - k,
         };
 
-        let previously_spoken = memory.get(&spoken).map(|(j, _)| *j);
-        memory.insert(spoken, (i as u32, previously_spoken));
+        memory
+            .entry(spoken)
+            .and_modify(|x| {
+                x.1 = Some(x.0);
+                x.0 = i as u32;
+            })
+            .or_insert((i as u32, None));
+
         last_spoken = spoken;
     }
 
@@ -1199,7 +1205,7 @@ pub fn advent_16_part_2(input: String) -> u32 {
 fn test_part_1() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_16_part_1(input);
+    let result = advent_15_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
     assert_eq!(result, 436)
@@ -1209,7 +1215,7 @@ fn test_part_1() {
 fn test_part_2() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_16_part_2(input);
+    let result = advent_15_part_2(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
     assert_eq!(result, 175594)

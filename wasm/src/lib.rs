@@ -1150,29 +1150,19 @@ fn play_numbers_game(input: String, until: usize) -> u32 {
         .enumerate()
         .map(|(i, word)| {
             let n = word.parse::<u32>().expect("!");
-            (n, (i as u32, None))
+            (n, i as u32)
         })
         .collect::<FxHashMap<_, _>>();
 
-    let mut last_spoken = *memory.iter().last().expect("Should exist a last value!").0;
+    let mut last_spoken = 0;
 
-    for i in memory.len()..until {
-        let mem = memory
-            .get(&last_spoken)
-            .expect("Previous value should have been inserted!");
-        let spoken = match mem {
-            (_, None) => 0,
-            (j, Some(k)) => j - k,
+    for i in (memory.len() + 1)..until {
+        let spoken = match memory.get(&last_spoken) {
+            None => 0,
+            Some(k) => (i - 1) as u32 - k,
         };
 
-        memory
-            .entry(spoken)
-            .and_modify(|x| {
-                x.1 = Some(x.0);
-                x.0 = i as u32;
-            })
-            .or_insert((i as u32, None));
-
+        memory.insert(last_spoken, i as u32 - 1);
         last_spoken = spoken;
     }
 
@@ -1208,7 +1198,7 @@ fn test_part_1() {
     let result = advent_15_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 436)
+    assert_eq!(result, 371)
 }
 
 #[test]
@@ -1218,7 +1208,7 @@ fn test_part_2() {
     let result = advent_15_part_2(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 175594)
+    assert_eq!(result, 352)
 }
 
 #[wasm_bindgen(js_name = "advent17Part1")]

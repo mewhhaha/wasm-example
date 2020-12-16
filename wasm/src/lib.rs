@@ -1268,8 +1268,9 @@ fn find_order(mut mentioned: &mut Vec<usize>, candidates: &[Vec<usize>]) -> Opti
 
                 mentioned.push(*x);
 
-                if let Some(order) = find_order(&mut mentioned, rest) {
-                    return Some(order);
+                let result = find_order(&mut mentioned, rest);
+                if result.is_some() {
+                    return result;
                 }
 
                 mentioned.pop();

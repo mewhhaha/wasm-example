@@ -1257,23 +1257,24 @@ pub fn advent_16_part_1(input: String) -> usize {
         .sum()
 }
 
-fn find_order(mentioned: Vec<usize>, column_candidates: &[Vec<usize>]) -> Option<Vec<usize>> {
-    match column_candidates {
-        [] => Some(vec![]),
+fn find_order(mentioned: &Vec<usize>, candidates: &[Vec<usize>]) -> Option<Vec<usize>> {
+    let mut included = mentioned.to_vec();
+
+    match candidates {
+        [] => Some(included),
         [xs, rest @ ..] => {
             for x in xs {
                 if mentioned.contains(&x) {
                     continue;
                 }
 
-                let mut included = mentioned.to_vec();
                 included.push(*x);
 
-                if let Some(mut order) = find_order(included, rest) {
-                    let mut with = vec![*x];
-                    with.append(&mut order);
-                    return Some(with);
+                if let Some(order) = find_order(&included, rest) {
+                    return Some(order);
                 }
+
+                included.pop();
             }
 
             None
@@ -1285,29 +1286,23 @@ fn find_order(mentioned: Vec<usize>, column_candidates: &[Vec<usize>]) -> Option
 pub fn advent_16_part_2(input: String) -> usize {
     let (rules, ticket, nearby_tickets) = parse_ticket_translation(input);
     let valid_numbers = valid_ticket_numbers(&rules);
-
-    let mut ticket_columns: Vec<Vec<usize>> = ticket.iter().map(|n| vec![*n]).collect();
-
-    nearby_tickets
+    let valid_tickets = nearby_tickets
         .into_iter()
         .filter(|ns| ns.iter().all(|n| valid_numbers[*n]))
-        .for_each(|t| {
-            t.into_iter().enumerate().for_each(|(i, n)| {
-                ticket_columns[i].push(n);
-            })
-        });
+        .collect::<Vec<_>>();
 
-    let mut column_candidates: Vec<Vec<usize>> = vec![vec![]; ticket.len()];
+    let mut candidates: Vec<Vec<usize>> = vec![vec![]; ticket.len()];
 
     for (i, ticket_rule) in rules.iter().enumerate() {
-        for (j, column) in ticket_columns.iter().enumerate() {
-            if column.iter().all(|n| validate_number(ticket_rule, n)) {
-                column_candidates[j].push(i);
+        for j in 0..valid_tickets[0].len() {
+            if (0..valid_tickets.len()).all(|k| validate_number(ticket_rule, &valid_tickets[k][j]))
+            {
+                candidates[j].push(i);
             }
         }
     }
 
-    let order = find_order(vec![], &column_candidates).expect("An answer!");
+    let order = find_order(&vec![], &candidates).expect("An answer!");
     let departures = order.into_iter().map(|i| {
         let TicketRule { title, .. } = &rules[i];
         title.starts_with("de")

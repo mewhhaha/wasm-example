@@ -10,7 +10,7 @@ use std::{
     ops::{Add, Mul},
 };
 
-use fxhash::{FxHashMap, FxHashSet};
+use fxhash::FxHashMap;
 use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -1257,24 +1257,22 @@ pub fn advent_16_part_1(input: String) -> usize {
         .sum()
 }
 
-fn find_order(mentioned: &Vec<usize>, candidates: &[Vec<usize>]) -> Option<Vec<usize>> {
-    let mut included = mentioned.to_vec();
-
+fn find_order(mut mentioned: &mut Vec<usize>, candidates: &[Vec<usize>]) -> Option<Vec<usize>> {
     match candidates {
-        [] => Some(included),
+        [] => Some(mentioned.to_vec()),
         [xs, rest @ ..] => {
             for x in xs {
                 if mentioned.contains(&x) {
                     continue;
                 }
 
-                included.push(*x);
+                mentioned.push(*x);
 
-                if let Some(order) = find_order(&included, rest) {
+                if let Some(order) = find_order(&mut mentioned, rest) {
                     return Some(order);
                 }
 
-                included.pop();
+                mentioned.pop();
             }
 
             None
@@ -1302,7 +1300,7 @@ pub fn advent_16_part_2(input: String) -> usize {
         }
     }
 
-    let order = find_order(&vec![], &candidates).expect("An answer!");
+    let order = find_order(&mut vec![], &candidates).expect("An answer!");
     let departures = order.into_iter().map(|i| {
         let TicketRule { title, .. } = &rules[i];
         title.starts_with("de")

@@ -1226,7 +1226,7 @@ fn validate_number(
     (*n >= range_1.0 && *n <= range_1.1) || (*n >= range_2.0 && *n <= range_2.1)
 }
 
-fn valid_ticket_numbers(rules: &Vec<TicketRule>) -> Vec<bool> {
+fn make_valid_numbers_array(rules: &Vec<TicketRule>) -> Vec<bool> {
     let mut valid_numbers = vec![false; 1000];
     rules.iter().for_each(
         |TicketRule {
@@ -1248,7 +1248,7 @@ fn valid_ticket_numbers(rules: &Vec<TicketRule>) -> Vec<bool> {
 pub fn advent_16_part_1(input: String) -> usize {
     let (rules, _, nearby_tickets) = parse_ticket_translation(input);
 
-    let valid_numbers = valid_ticket_numbers(&rules);
+    let valid_numbers = make_valid_numbers_array(&rules);
 
     nearby_tickets
         .into_iter()
@@ -1285,7 +1285,7 @@ fn find_order(mentioned: &Vec<usize>, candidates: &[Vec<usize>]) -> Option<Vec<u
 #[wasm_bindgen(js_name = "advent16Part2")]
 pub fn advent_16_part_2(input: String) -> usize {
     let (rules, ticket, nearby_tickets) = parse_ticket_translation(input);
-    let valid_numbers = valid_ticket_numbers(&rules);
+    let valid_numbers = make_valid_numbers_array(&rules);
     let valid_tickets = nearby_tickets
         .into_iter()
         .filter(|ns| ns.iter().all(|n| valid_numbers[*n]))

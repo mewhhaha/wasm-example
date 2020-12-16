@@ -1217,6 +1217,15 @@ fn parse_ticket_translation(input: String) -> (Vec<TicketRule>, Vec<usize>, Vec<
     }
 }
 
+fn validate_number(
+    TicketRule {
+        range_1, range_2, ..
+    }: &TicketRule,
+    n: &usize,
+) -> bool {
+    (*n >= range_1.0 && *n <= range_1.1) || (*n >= range_2.0 && *n <= range_2.1)
+}
+
 fn valid_ticket_numbers(rules: &Vec<TicketRule>) -> Vec<bool> {
     let mut valid_numbers = vec![false; 1000];
     rules.iter().for_each(
@@ -1272,12 +1281,6 @@ fn find_order(mentioned: Vec<usize>, column_candidates: &[Vec<usize>]) -> Option
     }
 }
 
-#[test]
-fn test_find_order() {
-    let candidates = [vec![1, 2], vec![3, 1], vec![4, 3]];
-    assert_eq!(find_order(vec![], &candidates), Some(vec![1, 3, 4]),)
-}
-
 #[wasm_bindgen(js_name = "advent16Part2")]
 pub fn advent_16_part_2(input: String) -> usize {
     let (rules, ticket, nearby_tickets) = parse_ticket_translation(input);
@@ -1296,35 +1299,24 @@ pub fn advent_16_part_2(input: String) -> usize {
 
     let mut column_candidates: Vec<Vec<usize>> = vec![vec![]; ticket.len()];
 
-    for (
-        i,
-        TicketRule {
-            range_1, range_2, ..
-        },
-    ) in rules.iter().enumerate()
-    {
+    for (i, ticket_rule) in rules.iter().enumerate() {
         for (j, column) in ticket_columns.iter().enumerate() {
-            if column.iter().all(|n| {
-                (*n >= range_1.0 && *n <= range_1.1) || (*n >= range_2.0 && *n <= range_2.1)
-            }) {
+            if column.iter().all(|n| validate_number(ticket_rule, n)) {
                 column_candidates[j].push(i);
             }
         }
     }
 
     let order = find_order(vec![], &column_candidates).expect("An answer!");
-    let departures = order
-        .into_iter()
-        .map(|i| {
-            let TicketRule { title, .. } = &rules[i];
-            title.starts_with("de")
-        })
-        .collect::<Vec<_>>();
+    let departures = order.into_iter().map(|i| {
+        let TicketRule { title, .. } = &rules[i];
+        title.starts_with("de")
+    });
 
     ticket
         .iter()
-        .zip(departures.iter())
-        .filter_map(|(n, p)| if *p { Some(n) } else { None })
+        .zip(departures)
+        .filter_map(|(n, p)| if p { Some(n) } else { None })
         .product()
 }
 

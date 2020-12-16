@@ -5,12 +5,12 @@
 extern crate wasm_bindgen;
 
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashMap, HashSet},
     hash::Hash,
     ops::{Add, Mul},
 };
 
-use fxhash::FxHashMap;
+use fxhash::{FxHashMap, FxHashSet};
 use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -1179,33 +1179,170 @@ pub fn advent_15_part_2(input: String) -> u32 {
     play_numbers_game(input, 30000000)
 }
 
+#[derive(Display, FromStr, PartialEq, Debug)]
+#[display("{title}: {range_1.0}-{range_1.1} or {range_2.0}-{range_2.1}")]
+struct TicketRule {
+    title: String,
+    #[from_str(default)]
+    range_1: (usize, usize),
+    #[from_str(default)]
+    range_2: (usize, usize),
+}
+
+fn parse_ticket(text: &str) -> Vec<usize> {
+    text.split(',')
+        .map(|n| n.parse::<usize>().expect("!"))
+        .collect::<Vec<_>>()
+}
+
+fn parse_ticket_translation(input: String) -> (Vec<TicketRule>, Vec<usize>, Vec<Vec<usize>>) {
+    match input.split("\n\n").collect::<Vec<_>>()[..] {
+        [rules_text, ticket_text, nearby_tickets_text] => (
+            rules_text
+                .lines()
+                .map(|line| line.parse::<TicketRule>().expect(""))
+                .collect::<Vec<_>>(),
+            ticket_text
+                .lines()
+                .skip(1)
+                .flat_map(parse_ticket)
+                .collect::<Vec<_>>(),
+            nearby_tickets_text
+                .lines()
+                .skip(1)
+                .map(parse_ticket)
+                .collect::<Vec<_>>(),
+        ),
+        _ => panic!("Faulty input!"),
+    }
+}
+
+fn valid_ticket_numbers(rules: &Vec<TicketRule>) -> Vec<bool> {
+    let mut valid_numbers = vec![false; 1000];
+    rules.iter().for_each(
+        |TicketRule {
+             range_1, range_2, ..
+         }| {
+            (range_1.0..=range_1.1).for_each(|n| {
+                valid_numbers[n] = true;
+            });
+            (range_2.0..=range_2.1).for_each(|n| {
+                valid_numbers[n] = true;
+            });
+        },
+    );
+
+    valid_numbers
+}
+
 #[wasm_bindgen(js_name = "advent16Part1")]
-pub fn advent_16_part_1(input: String) -> u32 {
-    println!("{}", input);
-    1
+pub fn advent_16_part_1(input: String) -> usize {
+    let (rules, _, nearby_tickets) = parse_ticket_translation(input);
+
+    let valid_numbers = valid_ticket_numbers(&rules);
+
+    nearby_tickets
+        .into_iter()
+        .flatten()
+        .filter(|n| !valid_numbers[*n])
+        .sum()
+}
+
+fn find_order(mentioned: Vec<usize>, column_candidates: &[Vec<usize>]) -> Option<Vec<usize>> {
+    match column_candidates {
+        [] => Some(vec![]),
+        [xs, rest @ ..] => {
+            for x in xs {
+                if mentioned.contains(&x) {
+                    continue;
+                }
+
+                let mut included = mentioned.to_vec();
+                included.push(*x);
+
+                if let Some(mut order) = find_order(included, rest) {
+                    let mut with = vec![*x];
+                    with.append(&mut order);
+                    return Some(with);
+                }
+            }
+
+            None
+        }
+    }
+}
+
+#[test]
+fn test_find_order() {
+    let candidates = [vec![1, 2], vec![3, 1], vec![4, 3]];
+    assert_eq!(find_order(vec![], &candidates), Some(vec![1, 3, 4]),)
 }
 
 #[wasm_bindgen(js_name = "advent16Part2")]
-pub fn advent_16_part_2(input: String) -> u32 {
-    println!("{}", input);
-    1
+pub fn advent_16_part_2(input: String) -> usize {
+    let (rules, ticket, nearby_tickets) = parse_ticket_translation(input);
+    let valid_numbers = valid_ticket_numbers(&rules);
+
+    let mut ticket_columns: Vec<Vec<usize>> = ticket.iter().map(|n| vec![*n]).collect();
+
+    nearby_tickets
+        .into_iter()
+        .filter(|ns| ns.iter().all(|n| valid_numbers[*n]))
+        .for_each(|t| {
+            t.into_iter().enumerate().for_each(|(i, n)| {
+                ticket_columns[i].push(n);
+            })
+        });
+
+    let mut column_candidates: Vec<Vec<usize>> = vec![vec![]; ticket.len()];
+
+    for (
+        i,
+        TicketRule {
+            range_1, range_2, ..
+        },
+    ) in rules.iter().enumerate()
+    {
+        for (j, column) in ticket_columns.iter().enumerate() {
+            if column.iter().all(|n| {
+                (*n >= range_1.0 && *n <= range_1.1) || (*n >= range_2.0 && *n <= range_2.1)
+            }) {
+                column_candidates[j].push(i);
+            }
+        }
+    }
+
+    let order = find_order(vec![], &column_candidates).expect("An answer!");
+    let departures = order
+        .into_iter()
+        .map(|i| {
+            let TicketRule { title, .. } = &rules[i];
+            title.starts_with("de")
+        })
+        .collect::<Vec<_>>();
+
+    ticket
+        .iter()
+        .zip(departures.iter())
+        .filter_map(|(n, p)| if *p { Some(n) } else { None })
+        .product()
 }
 
 #[test]
 fn test_part_1() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_15_part_1(input);
+    let result = advent_16_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 371)
+    assert_eq!(result, 71)
 }
 
 #[test]
 fn test_part_2() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_15_part_2(input);
+    let result = advent_16_part_2(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
     assert_eq!(result, 352)

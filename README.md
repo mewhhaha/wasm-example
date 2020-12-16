@@ -10,3 +10,5 @@
 
 ### Requirements
 - You need Rust, wasm-pack (cargo install wasm-pack), pnpm and patience
+- use `pnpm build` in the wasm-folder to build the package
+- use `pnpm start` to start the server

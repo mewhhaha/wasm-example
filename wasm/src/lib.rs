@@ -1278,14 +1278,14 @@ pub fn advent_16_part_2(input: String) -> usize {
     }
 
     let mut product = 1;
-    let mut already_used: Vec<bool> = vec![false; ticket.len()];
+    let mut eliminated: Vec<bool> = vec![false; ticket.len()];
     let mut elimination_order: Vec<_> = candidates.into_iter().enumerate().collect();
     elimination_order.sort_by(|(_, a), (_, b)| a.len().cmp(&b.len()));
 
     for (i, rs) in elimination_order {
         for r in rs {
-            if !already_used[r] {
-                already_used[r] = true;
+            if !eliminated[r] {
+                eliminated[r] = true;
                 let TicketRule { title, .. } = &rules[r];
                 if title.starts_with("de") {
                     product *= ticket[i];

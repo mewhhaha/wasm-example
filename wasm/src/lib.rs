@@ -1347,33 +1347,32 @@ fn cube_game_n(dimensions: usize, input: String) -> usize {
         .collect();
 
     for _ in 0..6 {
-        let mut buffer: FxHashSet<Vec<i8>> = FxHashSet::default();
-        let mut checked: FxHashSet<Vec<i8>> = FxHashSet::default();
+        let mut counts: FxHashMap<Vec<i8>, u8> = FxHashMap::default();
 
         for active in cubes.iter() {
-            let candidates = neighbours_3d(active, &kernel);
-            let active_neighbours = candidates.iter().filter(|pos| cubes.contains(*pos)).count();
-            if let 2..=3 = active_neighbours {
-                buffer.insert(active.to_vec());
-            }
-            let inactive_neighbours = candidates
-                .iter()
-                .filter(|pos| !checked.contains(*pos) && !cubes.contains(*pos))
-                .collect::<Vec<_>>();
+            counts.entry(active.to_vec()).or_insert(0);
 
-            inactive_neighbours.into_iter().for_each(|pos| {
-                let active_neighbours = neighbours_3d(pos, &kernel)
-                    .iter()
-                    .filter(|neighbour| cubes.contains(*neighbour))
-                    .count();
-                if active_neighbours == 3 {
-                    buffer.insert(pos.to_vec());
-                }
-                checked.insert(pos.to_vec());
+            let candidates = neighbours_3d(active, &kernel);
+
+            candidates.into_iter().for_each(|pos| {
+                counts
+                    .entry(pos)
+                    .and_modify(|i| {
+                        *i += 1;
+                    })
+                    .or_insert(1);
             });
         }
 
-        cubes = buffer;
+        cubes = counts
+            .into_iter()
+            .filter_map(|(pos, count)| match (cubes.contains(&pos), count) {
+                (true, 2..=3) => Some(pos),
+                (true, _) => None,
+                (false, 3) => Some(pos),
+                _ => None,
+            })
+            .collect();
     }
 
     cubes.len()
@@ -1387,6 +1386,12 @@ pub fn advent_17_part_1(input: String) -> usize {
 #[wasm_bindgen(js_name = "advent17Part2")]
 pub fn advent_17_part_2(input: String) -> usize {
     cube_game_n(4, input)
+}
+
+#[wasm_bindgen(js_name = "advent18Part1")]
+pub fn advent_18_part_1(input: String) -> u32 {
+    println!("{}", input);
+    1
 }
 
 #[test]
@@ -1407,12 +1412,6 @@ fn test_part_2() {
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
     assert_eq!(result, 1680)
-}
-
-#[wasm_bindgen(js_name = "advent18Part1")]
-pub fn advent_18_part_1(input: String) -> u32 {
-    println!("{}", input);
-    1
 }
 #[wasm_bindgen(js_name = "advent18Part2")]
 pub fn advent_18_part_2(input: String) -> u32 {

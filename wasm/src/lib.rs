@@ -1257,30 +1257,6 @@ pub fn advent_16_part_1(input: String) -> usize {
         .sum()
 }
 
-fn find_order(mut mentioned: &mut Vec<usize>, candidates: &[Vec<usize>]) -> Option<Vec<usize>> {
-    match candidates {
-        [] => Some(mentioned.to_vec()),
-        [xs, rest @ ..] => {
-            for x in xs {
-                if mentioned.contains(&x) {
-                    continue;
-                }
-
-                mentioned.push(*x);
-
-                let result = find_order(&mut mentioned, rest);
-                if result.is_some() {
-                    return result;
-                }
-
-                mentioned.pop();
-            }
-
-            None
-        }
-    }
-}
-
 #[wasm_bindgen(js_name = "advent16Part2")]
 pub fn advent_16_part_2(input: String) -> usize {
     let (rules, ticket, nearby_tickets) = parse_ticket_translation(input);

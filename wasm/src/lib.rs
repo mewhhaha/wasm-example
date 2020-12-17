@@ -1279,10 +1279,10 @@ pub fn advent_16_part_2(input: String) -> usize {
 
     let mut product = 1;
     let mut already_used: Vec<bool> = vec![false; ticket.len()];
-    let mut sorted_candidates: Vec<_> = candidates.into_iter().enumerate().collect();
-    sorted_candidates.sort_by(|(_, a), (_, b)| a.len().cmp(&b.len()));
+    let mut elimination_order: Vec<_> = candidates.into_iter().enumerate().collect();
+    elimination_order.sort_by(|(_, a), (_, b)| a.len().cmp(&b.len()));
 
-    for (i, rs) in sorted_candidates {
+    for (i, rs) in elimination_order {
         for r in rs {
             if !already_used[r] {
                 already_used[r] = true;

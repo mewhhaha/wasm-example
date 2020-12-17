@@ -1302,14 +1302,14 @@ pub fn advent_16_part_2(input: String) -> usize {
     }
 
     let mut product = 1;
-    let mut order: Vec<bool> = vec![false; ticket.len()];
+    let mut already_used: Vec<bool> = vec![false; ticket.len()];
     let mut sorted_candidates: Vec<_> = candidates.into_iter().enumerate().collect();
     sorted_candidates.sort_by(|(_, a), (_, b)| a.len().cmp(&b.len()));
 
     for (i, rs) in sorted_candidates {
         for r in rs {
-            if !order[r] {
-                order[r] = true;
+            if !already_used[r] {
+                already_used[r] = true;
                 let TicketRule { title, .. } = &rules[r];
                 if title.starts_with("de") {
                     product *= ticket[i];

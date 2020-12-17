@@ -1301,17 +1301,25 @@ pub fn advent_16_part_2(input: String) -> usize {
         }
     }
 
-    let order = find_order(&mut vec![], &candidates).expect("An answer!");
-    let departures = order.into_iter().map(|i| {
-        let TicketRule { title, .. } = &rules[i];
-        title.starts_with("de")
-    });
+    let mut product = 1;
+    let mut order: Vec<bool> = vec![false; ticket.len()];
+    let mut sorted_candidates: Vec<_> = candidates.into_iter().enumerate().collect();
+    sorted_candidates.sort_by(|(_, a), (_, b)| a.len().cmp(&b.len()));
 
-    ticket
-        .iter()
-        .zip(departures)
-        .filter_map(|(n, p)| if p { Some(n) } else { None })
-        .product()
+    for (i, rs) in sorted_candidates {
+        for r in rs {
+            if !order[r] {
+                order[r] = true;
+                let TicketRule { title, .. } = &rules[r];
+                if title.starts_with("de") {
+                    product *= ticket[i];
+                }
+                break;
+            }
+        }
+    }
+
+    product
 }
 
 #[test]
@@ -1330,7 +1338,7 @@ fn test_part_2() {
     let before = std::time::Instant::now();
     let result = advent_16_part_2(input);
     let after = before.elapsed();
-    println!("{:?}", after.as_millis());
+    println!("{:?}", after.as_micros());
     assert_eq!(result, 352)
 }
 

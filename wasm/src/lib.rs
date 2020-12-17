@@ -1317,7 +1317,7 @@ fn make_n_kernel(n: usize) -> Vec<Vec<i8>> {
     kernel
 }
 
-fn neighbours_3d(pos: &Vec<i8>, kernel: &Vec<Vec<i8>>) -> Vec<Vec<i8>> {
+fn neighbours_kernel(pos: &Vec<i8>, kernel: &Vec<Vec<i8>>) -> Vec<Vec<i8>> {
     kernel
         .iter()
         .map(|offset| pos.iter().zip(offset.iter()).map(|(a, b)| a + b).collect())
@@ -1352,7 +1352,7 @@ fn cube_game_n(dimensions: usize, input: String) -> usize {
         for active in cubes.iter() {
             counts.entry(active.to_vec()).or_insert(0);
 
-            let candidates = neighbours_3d(active, &kernel);
+            let candidates = neighbours_kernel(active, &kernel);
 
             candidates.into_iter().for_each(|pos| {
                 counts

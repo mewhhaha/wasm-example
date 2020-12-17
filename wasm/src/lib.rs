@@ -1,6 +1,7 @@
 #![feature(or_patterns)]
 #![feature(str_split_once)]
 #![feature(iterator_fold_self)]
+#![feature(array_map)]
 
 extern crate wasm_bindgen;
 
@@ -10,7 +11,7 @@ use std::{
     ops::{Add, Mul},
 };
 
-use fxhash::FxHashMap;
+use fxhash::{FxHashMap, FxHashSet};
 use parse_display::{Display, FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -681,7 +682,7 @@ fn is_seat_occupied(seat: &Option<Seat>) -> bool {
     }
 }
 
-const KERNEL: [(isize, isize); 8] = [
+const KERNEL_2D: [(isize, isize); 8] = [
     (-1, -1),
     (-1, 0),
     (0, -1),
@@ -693,7 +694,7 @@ const KERNEL: [(isize, isize); 8] = [
 ];
 
 fn num_adjacent_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) -> usize {
-    KERNEL
+    KERNEL_2D
         .iter()
         .filter(|(oy, ox)| {
             let j = i as isize + oy * width as isize + ox;
@@ -709,7 +710,7 @@ fn num_adjacent_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) ->
 }
 
 fn num_seen_seats(width: usize, placements: &Vec<Option<Seat>>, i: usize) -> usize {
-    KERNEL
+    KERNEL_2D
         .iter()
         .filter(|(oy, ox)| {
             let mut cy = *oy;
@@ -1298,37 +1299,116 @@ pub fn advent_16_part_2(input: String) -> usize {
     product
 }
 
+fn make_n_kernel(n: usize) -> Vec<Vec<i8>> {
+    if n == 1 {
+        return vec![vec![-1], vec![0], vec![1]];
+    }
+
+    let mut kernel = vec![];
+    let smaller_kernel = make_n_kernel(n - 1);
+    for i in -1..=1 {
+        smaller_kernel.iter().for_each(|vs| {
+            let mut with = vs.to_vec();
+            with.push(i);
+            kernel.push(with);
+        })
+    }
+
+    kernel
+}
+
+fn neighbours_3d(pos: &Vec<i8>, kernel: &Vec<Vec<i8>>) -> Vec<Vec<i8>> {
+    kernel
+        .iter()
+        .map(|offset| pos.iter().zip(offset.iter()).map(|(a, b)| a + b).collect())
+        .collect()
+}
+
+fn cube_game_n(dimensions: usize, input: String) -> usize {
+    let kernel: Vec<Vec<i8>> = make_n_kernel(dimensions)
+        .into_iter()
+        .filter(|pos| *pos != vec![0; dimensions])
+        .collect();
+
+    let mut cubes: FxHashSet<Vec<i8>> = input
+        .lines()
+        .enumerate()
+        .flat_map(|(y, line)| {
+            line.chars().enumerate().filter_map(move |(x, c)| match c {
+                '#' => {
+                    let mut pos = vec![0; dimensions];
+                    pos[0] = x as i8;
+                    pos[1] = y as i8;
+                    Some(pos)
+                }
+                _ => None,
+            })
+        })
+        .collect();
+
+    for _ in 0..6 {
+        let mut buffer: FxHashSet<Vec<i8>> = FxHashSet::default();
+        let mut checked: FxHashSet<Vec<i8>> = FxHashSet::default();
+
+        for active in cubes.iter() {
+            let candidates = neighbours_3d(active, &kernel);
+            let active_neighbours = candidates.iter().filter(|pos| cubes.contains(*pos)).count();
+            if let 2..=3 = active_neighbours {
+                buffer.insert(active.to_vec());
+            }
+            let inactive_neighbours = candidates
+                .iter()
+                .filter(|pos| !checked.contains(*pos) && !cubes.contains(*pos))
+                .collect::<Vec<_>>();
+
+            inactive_neighbours.into_iter().for_each(|pos| {
+                let active_neighbours = neighbours_3d(pos, &kernel)
+                    .iter()
+                    .filter(|neighbour| cubes.contains(*neighbour))
+                    .count();
+                if active_neighbours == 3 {
+                    buffer.insert(pos.to_vec());
+                }
+                checked.insert(pos.to_vec());
+            });
+        }
+
+        cubes = buffer;
+    }
+
+    cubes.len()
+}
+
+#[wasm_bindgen(js_name = "advent17Part1")]
+pub fn advent_17_part_1(input: String) -> usize {
+    cube_game_n(3, input)
+}
+
+#[wasm_bindgen(js_name = "advent17Part2")]
+pub fn advent_17_part_2(input: String) -> usize {
+    cube_game_n(4, input)
+}
+
 #[test]
 fn test_part_1() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_16_part_1(input);
+    let result = advent_17_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 71)
+    assert_eq!(result, 263)
 }
 
 #[test]
 fn test_part_2() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_16_part_2(input);
+    let result = advent_17_part_2(input);
     let after = before.elapsed();
-    println!("{:?}", after.as_micros());
-    assert_eq!(result, 352)
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 1680)
 }
 
-#[wasm_bindgen(js_name = "advent17Part1")]
-pub fn advent_17_part_1(input: String) -> u32 {
-    println!("{}", input);
-    1
-}
-
-#[wasm_bindgen(js_name = "advent17Part2")]
-pub fn advent_17_part_2(input: String) -> u32 {
-    println!("{}", input);
-    1
-}
 #[wasm_bindgen(js_name = "advent18Part1")]
 pub fn advent_18_part_1(input: String) -> u32 {
     println!("{}", input);

@@ -6,7 +6,7 @@
 extern crate wasm_bindgen;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{HashMap, HashSet, VecDeque},
     hash::Hash,
     ops::{Add, Mul},
 };
@@ -1388,36 +1388,201 @@ pub fn advent_17_part_2(input: String) -> usize {
     cube_game_n(4, input)
 }
 
+#[derive(Debug)]
+enum Exp {
+    Constant(u64),
+    Add,
+    Mul,
+}
+
+fn eval_expression(line: &str) -> u64 {
+    let mut stack: Vec<Exp> = vec![];
+
+    let mut tokens = &line
+        .chars()
+        .filter(|c| !c.is_whitespace())
+        .collect::<Vec<_>>()[..];
+    loop {
+        let (e, mut left) = match tokens {
+            ['+', rest @ ..] => (Exp::Add, rest),
+            ['*', rest @ ..] => (Exp::Mul, rest),
+            ['(', rest @ ..] => {
+                let mut op = 1;
+                let mut cont = rest;
+                let mut par = String::new();
+                loop {
+                    let (c, after) = cont.split_first().unwrap();
+                    match c {
+                        ')' => {
+                            op -= 1;
+                        }
+                        '(' => {
+                            op += 1;
+                        }
+                        _ => {}
+                    }
+                    cont = after;
+
+                    if op == 0 {
+                        break;
+                    }
+                    par.push(*c);
+                }
+
+                let n = eval_expression(&par[..]);
+                (Exp::Constant(n), cont)
+            }
+            [a, rest @ ..] => {
+                let n = a.to_digit(10).expect("Number");
+                (Exp::Constant(n as u64), rest)
+            }
+            [] => break,
+        };
+
+        match e {
+            Exp::Constant(n) if stack.len() > 0 => {
+                let op = stack.pop().unwrap();
+                let m = match stack.pop().unwrap() {
+                    Exp::Constant(m) => m,
+                    _ => panic!("Should have been number!"),
+                };
+
+                let res = match op {
+                    Exp::Add => n + m,
+                    Exp::Mul => n * m,
+                    _ => panic!("Should have been operator!"),
+                };
+
+                stack.push(Exp::Constant(res));
+            }
+            _ => {
+                stack.push(e);
+            }
+        }
+
+        std::mem::swap(&mut tokens, &mut left);
+    }
+
+    match stack.pop().unwrap() {
+        Exp::Constant(n) => n,
+        _ => panic!("!"),
+    }
+}
+
+fn eval_expression_2(line: &str) -> u64 {
+    let mut stack: Vec<Exp> = vec![];
+
+    let mut tokens = &line
+        .chars()
+        .filter(|c| !c.is_whitespace())
+        .collect::<Vec<_>>()[..];
+    loop {
+        let (e, mut left) = match tokens {
+            ['+', rest @ ..] => (Exp::Add, rest),
+            ['*', rest @ ..] => (Exp::Mul, rest),
+            ['(', rest @ ..] => {
+                let mut op = 1;
+                let mut cont = rest;
+                let mut par = String::new();
+                loop {
+                    let (c, after) = cont.split_first().unwrap();
+                    match c {
+                        ')' => {
+                            op -= 1;
+                        }
+                        '(' => {
+                            op += 1;
+                        }
+                        _ => {}
+                    }
+                    cont = after;
+
+                    if op == 0 {
+                        break;
+                    }
+                    par.push(*c);
+                }
+
+                let n = eval_expression_2(&par[..]);
+                (Exp::Constant(n), cont)
+            }
+            [a, rest @ ..] => {
+                let n = a.to_digit(10).expect("Number");
+                (Exp::Constant(n as u64), rest)
+            }
+            [] => break,
+        };
+
+        match e {
+            Exp::Constant(n) if stack.len() > 0 => {
+                let op = stack.pop().unwrap();
+
+                if let Exp::Add = op {
+                    let m = match stack.pop().unwrap() {
+                        Exp::Constant(m) => m,
+                        _ => panic!("Should have been number!"),
+                    };
+                    stack.push(Exp::Constant(n + m));
+                } else {
+                    stack.push(op);
+                    stack.push(Exp::Constant(n));
+                }
+            }
+            _ => {
+                stack.push(e);
+            }
+        }
+
+        std::mem::swap(&mut tokens, &mut left);
+    }
+
+    let mut result = 0;
+
+    println!("{:?}", stack);
+
+    while let Some(Exp::Constant(n)) = stack.pop() {
+        result = n;
+        stack.pop();
+        if let Some(Exp::Constant(m)) = stack.pop() {
+            let w = n * m;
+            stack.push(Exp::Constant(w));
+        }
+    }
+
+    println!("{:?}", stack);
+    result
+}
+
 #[wasm_bindgen(js_name = "advent18Part1")]
-pub fn advent_18_part_1(input: String) -> u32 {
-    println!("{}", input);
-    1
+pub fn advent_18_part_1(input: String) -> u64 {
+    input.lines().map(eval_expression).sum()
+}
+
+#[wasm_bindgen(js_name = "advent18Part2")]
+pub fn advent_18_part_2(input: String) -> u64 {
+    input.lines().map(eval_expression_2).sum()
 }
 
 #[test]
 fn test_part_1() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_17_part_1(input);
+    let result = advent_18_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 263)
+    assert_eq!(result, 26)
 }
 
 #[test]
 fn test_part_2() {
     let input = include_str!("./data.txt").to_string();
     let before = std::time::Instant::now();
-    let result = advent_17_part_2(input);
+    let result = advent_18_part_2(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 1680)
+    assert_eq!(result, 669060)
 }
-#[wasm_bindgen(js_name = "advent18Part2")]
-pub fn advent_18_part_2(input: String) -> u32 {
-    println!("{}", input);
-    1
-}
+
 #[wasm_bindgen(js_name = "advent19Part1")]
 pub fn advent_19_part_1(input: String) -> u32 {
     println!("{}", input);

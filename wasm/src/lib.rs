@@ -1416,47 +1416,20 @@ fn parse_expression(mut tokens: &[char]) -> (&[char], Exp) {
     }
 }
 
-fn eval_part_1(e: &Exp) -> u64 {
-    match e {
-        Exp::Constant(n) => *n,
-        Exp::Par(es) => {
-            let mut buffer = &es[1..];
-            let mut result = eval_part_1(&es[0]);
-
-            loop {
-                let left = match buffer {
-                    [op @ (Exp::Add | Exp::Mul), a, rest @ ..] => {
-                        let n = eval_part_1(a);
-                        result = match op {
-                            Exp::Add => result + n,
-                            _ => result * n,
-                        };
-                        rest
-                    }
-                    _ => return result,
-                };
-
-                buffer = left;
-            }
-        }
-        _ => panic!("Expected constant or par"),
-    }
-}
-
-fn eval_part_2<'a>(e: &Exp) -> u64 {
+fn eval_expression<'a>(e: &Exp, precedence: &Vec<Vec<Exp>>) -> u64 {
     match e {
         Exp::Constant(n) => *n,
         Exp::Par(es) => {
             let mut buffer = es.to_vec();
             let mut remaining = vec![buffer[0].clone()];
             let mut tokens = &buffer[1..];
-            let mut precedence = Exp::Add;
+            let mut ops = precedence.to_vec();
 
             loop {
                 match tokens {
-                    [op, b, rest @ ..] if *op == precedence => {
-                        let n = eval_part_2(&remaining.pop().unwrap());
-                        let m = eval_part_2(b);
+                    [op, b, rest @ ..] if ops.last().map_or(false, |p| p.contains(op)) => {
+                        let n = eval_expression(&remaining.pop().unwrap(), precedence);
+                        let m = eval_expression(b, precedence);
 
                         let x = match op {
                             Exp::Add => n + m,
@@ -1476,7 +1449,7 @@ fn eval_part_2<'a>(e: &Exp) -> u64 {
                         };
                     }
                     [] => {
-                        precedence = Exp::Mul;
+                        ops.pop();
                         buffer = remaining;
                         remaining = vec![buffer[0].clone()];
                         tokens = &buffer[1..];
@@ -1497,10 +1470,9 @@ pub fn advent_18_part_1(input: String) -> u64 {
                 .chars()
                 .filter(|c| !c.is_whitespace())
                 .collect::<Vec<_>>()[..];
-            println!("HEJ");
             parse_expression(&chars).1
         })
-        .map(|e| eval_part_1(&e))
+        .map(|e| eval_expression(&e, &vec![vec![Exp::Mul, Exp::Add]]))
         .sum()
 }
 
@@ -1515,7 +1487,7 @@ pub fn advent_18_part_2(input: String) -> u64 {
                 .collect::<Vec<_>>()[..];
             parse_expression(&chars).1
         })
-        .map(|e| eval_part_2(&e))
+        .map(|e| eval_expression(&e, &vec![vec![Exp::Mul], vec![Exp::Add]]))
         .sum()
 }
 

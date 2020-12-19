@@ -6,7 +6,7 @@
 extern crate wasm_bindgen;
 
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashMap, HashSet},
     hash::Hash,
     ops::{Add, Mul},
 };
@@ -1388,179 +1388,135 @@ pub fn advent_17_part_2(input: String) -> usize {
     cube_game_n(4, input)
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 enum Exp {
     Constant(u64),
     Add,
     Mul,
+    Par(Box<Vec<Exp>>),
 }
 
-fn eval_expression(line: &str) -> u64 {
-    let mut stack: Vec<Exp> = vec![];
-
-    let mut tokens = &line
-        .chars()
-        .filter(|c| !c.is_whitespace())
-        .collect::<Vec<_>>()[..];
+fn parse_expression(mut tokens: &[char]) -> (&[char], Exp) {
+    let mut result = Vec::new();
     loop {
-        let (e, mut left) = match tokens {
-            ['+', rest @ ..] => (Exp::Add, rest),
-            ['*', rest @ ..] => (Exp::Mul, rest),
-            ['(', rest @ ..] => {
-                let mut op = 1;
-                let mut cont = rest;
-                let mut par = String::new();
-                loop {
-                    let (c, after) = cont.split_first().unwrap();
-                    match c {
-                        ')' => {
-                            op -= 1;
-                        }
-                        '(' => {
-                            op += 1;
-                        }
-                        _ => {}
-                    }
-                    cont = after;
-
-                    if op == 0 {
-                        break;
-                    }
-                    par.push(*c);
-                }
-
-                let n = eval_expression(&par[..]);
-                (Exp::Constant(n), cont)
-            }
+        let (mut cont, e) = match tokens {
+            ['+', rest @ ..] => (rest, Exp::Add),
+            ['*', rest @ ..] => (rest, Exp::Mul),
+            ['(', rest @ ..] => parse_expression(rest),
+            [')', rest @ ..] => return (rest, Exp::Par(Box::new(result))),
             [a, rest @ ..] => {
                 let n = a.to_digit(10).expect("Number");
-                (Exp::Constant(n as u64), rest)
+                (rest, Exp::Constant(n as u64))
             }
-            [] => break,
+            [] => return (&[], Exp::Par(Box::new(result))),
         };
 
-        match e {
-            Exp::Constant(n) if stack.len() > 0 => {
-                let op = stack.pop().unwrap();
-                let m = match stack.pop().unwrap() {
-                    Exp::Constant(m) => m,
-                    _ => panic!("Should have been number!"),
-                };
-
-                let res = match op {
-                    Exp::Add => n + m,
-                    Exp::Mul => n * m,
-                    _ => panic!("Should have been operator!"),
-                };
-
-                stack.push(Exp::Constant(res));
-            }
-            _ => {
-                stack.push(e);
-            }
-        }
-
-        std::mem::swap(&mut tokens, &mut left);
-    }
-
-    match stack.pop().unwrap() {
-        Exp::Constant(n) => n,
-        _ => panic!("!"),
+        result.push(e);
+        std::mem::swap(&mut tokens, &mut cont);
     }
 }
 
-fn eval_expression_2(line: &str) -> u64 {
-    let mut stack: Vec<Exp> = vec![];
+fn eval_part_1(e: &Exp) -> u64 {
+    match e {
+        Exp::Constant(n) => *n,
+        Exp::Par(es) => {
+            let mut buffer = &es[1..];
+            let mut result = eval_part_1(&es[0]);
 
-    let mut tokens = &line
-        .chars()
-        .filter(|c| !c.is_whitespace())
-        .collect::<Vec<_>>()[..];
-    loop {
-        let (e, mut left) = match tokens {
-            ['+', rest @ ..] => (Exp::Add, rest),
-            ['*', rest @ ..] => (Exp::Mul, rest),
-            ['(', rest @ ..] => {
-                let mut op = 1;
-                let mut cont = rest;
-                let mut par = String::new();
-                loop {
-                    let (c, after) = cont.split_first().unwrap();
-                    match c {
-                        ')' => {
-                            op -= 1;
-                        }
-                        '(' => {
-                            op += 1;
-                        }
-                        _ => {}
+            loop {
+                let left = match buffer {
+                    [op @ (Exp::Add | Exp::Mul), a, rest @ ..] => {
+                        let n = eval_part_1(a);
+                        result = match op {
+                            Exp::Add => result + n,
+                            _ => result * n,
+                        };
+                        rest
                     }
-                    cont = after;
+                    _ => return result,
+                };
 
-                    if op == 0 {
-                        break;
-                    }
-                    par.push(*c);
-                }
-
-                let n = eval_expression_2(&par[..]);
-                (Exp::Constant(n), cont)
-            }
-            [a, rest @ ..] => {
-                let n = a.to_digit(10).expect("Number");
-                (Exp::Constant(n as u64), rest)
-            }
-            [] => break,
-        };
-
-        match e {
-            Exp::Constant(n) if stack.len() > 0 => {
-                let op = stack.pop().unwrap();
-
-                if let Exp::Add = op {
-                    let m = match stack.pop().unwrap() {
-                        Exp::Constant(m) => m,
-                        _ => panic!("Should have been number!"),
-                    };
-                    stack.push(Exp::Constant(n + m));
-                } else {
-                    stack.push(op);
-                    stack.push(Exp::Constant(n));
-                }
-            }
-            _ => {
-                stack.push(e);
+                buffer = left;
             }
         }
-
-        std::mem::swap(&mut tokens, &mut left);
+        _ => panic!("Expected constant or par"),
     }
+}
 
-    let mut result = 0;
+fn eval_part_2<'a>(e: &Exp) -> u64 {
+    match e {
+        Exp::Constant(n) => *n,
+        Exp::Par(es) => {
+            let mut buffer = es.to_vec();
+            let mut remaining = vec![buffer[0].clone()];
+            let mut tokens = &buffer[1..];
+            let mut precedence = Exp::Add;
 
-    println!("{:?}", stack);
+            loop {
+                match tokens {
+                    [op, b, rest @ ..] if *op == precedence => {
+                        let n = eval_part_2(&remaining.pop().unwrap());
+                        let m = eval_part_2(b);
 
-    while let Some(Exp::Constant(n)) = stack.pop() {
-        result = n;
-        stack.pop();
-        if let Some(Exp::Constant(m)) = stack.pop() {
-            let w = n * m;
-            stack.push(Exp::Constant(w));
+                        let x = match op {
+                            Exp::Add => n + m,
+                            _ => n * m,
+                        };
+                        remaining.push(Exp::Constant(x));
+                        tokens = rest;
+                    }
+                    [e, rest @ ..] => {
+                        remaining.push(e.clone());
+                        tokens = rest;
+                    }
+                    [] if remaining.len() == 1 => {
+                        match remaining[0] {
+                            Exp::Constant(n) => return n,
+                            _ => panic!("Expected constant"),
+                        };
+                    }
+                    [] => {
+                        precedence = Exp::Mul;
+                        buffer = remaining;
+                        remaining = vec![buffer[0].clone()];
+                        tokens = &buffer[1..];
+                    }
+                };
+            }
         }
+        _ => panic!("Expected constant or par"),
     }
-
-    println!("{:?}", stack);
-    result
 }
 
 #[wasm_bindgen(js_name = "advent18Part1")]
 pub fn advent_18_part_1(input: String) -> u64 {
-    input.lines().map(eval_expression).sum()
+    input
+        .lines()
+        .map(|line| {
+            let chars = &line
+                .chars()
+                .filter(|c| !c.is_whitespace())
+                .collect::<Vec<_>>()[..];
+            println!("HEJ");
+            parse_expression(&chars).1
+        })
+        .map(|e| eval_part_1(&e))
+        .sum()
 }
 
 #[wasm_bindgen(js_name = "advent18Part2")]
 pub fn advent_18_part_2(input: String) -> u64 {
-    input.lines().map(eval_expression_2).sum()
+    input
+        .lines()
+        .map(|line| {
+            let chars = &line
+                .chars()
+                .filter(|c| !c.is_whitespace())
+                .collect::<Vec<_>>()[..];
+            parse_expression(&chars).1
+        })
+        .map(|e| eval_part_2(&e))
+        .sum()
 }
 
 #[test]
@@ -1570,7 +1526,7 @@ fn test_part_1() {
     let result = advent_18_part_1(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 26)
+    assert_eq!(result, 75592527415659)
 }
 
 #[test]
@@ -1580,7 +1536,7 @@ fn test_part_2() {
     let result = advent_18_part_2(input);
     let after = before.elapsed();
     println!("{:?}", after.as_millis());
-    assert_eq!(result, 669060)
+    assert_eq!(result, 360029542265462)
 }
 
 #[wasm_bindgen(js_name = "advent19Part1")]

@@ -1491,36 +1491,131 @@ pub fn advent_18_part_2(input: String) -> u64 {
         .sum()
 }
 
-#[test]
-fn test_part_1() {
-    let input = include_str!("./data.txt").to_string();
-    let before = std::time::Instant::now();
-    let result = advent_18_part_1(input);
-    let after = before.elapsed();
-    println!("{:?}", after.as_millis());
-    assert_eq!(result, 75592527415659)
+enum MessageRule {
+    Match(String),
+    Ref(Vec<Vec<usize>>),
 }
 
-#[test]
-fn test_part_2() {
-    let input = include_str!("./data.txt").to_string();
-    let before = std::time::Instant::now();
-    let result = advent_18_part_2(input);
-    let after = before.elapsed();
-    println!("{:?}", after.as_millis());
-    assert_eq!(result, 360029542265462)
+#[derive(Display, FromStr)]
+#[display("{0}: {1}")]
+struct Indexed(usize, String);
+
+fn collapse_rule<'a>(
+    i: usize,
+    rows: &Vec<MessageRule>,
+    mut rules: &mut Vec<Option<Vec<String>>>,
+) -> Vec<String> {
+    if let Some(rule) = &rules[i] {
+        return rule.to_vec();
+    }
+
+    match &rows[i] {
+        MessageRule::Match(text) => {
+            rules[i] = Some(vec![text.clone()]);
+        }
+        MessageRule::Ref(ors) => {
+            let texts = ors
+                .iter()
+                .flat_map(|or| {
+                    let collapsed = or
+                        .iter()
+                        .map(|j| collapse_rule(*j, rows, &mut rules))
+                        .collect::<Vec<_>>();
+
+                    let mut possibilities = collapsed[0].to_vec();
+                    for o in collapsed.into_iter().skip(1) {
+                        possibilities = o
+                            .iter()
+                            .flat_map(|s2| {
+                                possibilities
+                                    .iter()
+                                    .map(move |s1| [s1.clone(), s2.clone()].concat())
+                            })
+                            .collect::<Vec<_>>();
+                    }
+                    possibilities
+                })
+                .collect::<Vec<String>>();
+            rules[i] = Some(texts);
+        }
+    };
+
+    match &rules[i] {
+        Some(rule) => rule.to_vec(),
+        _ => unreachable!(),
+    }
 }
+#[derive(Display, FromStr)]
+#[display("\"{0}\"")]
+struct MessageRuleChar(String);
 
 #[wasm_bindgen(js_name = "advent19Part1")]
-pub fn advent_19_part_1(input: String) -> u32 {
-    println!("{}", input);
-    1
+pub fn advent_19_part_1(input: String) -> usize {
+    let (rules_text, messages) = input.split_once("\n\n").expect("Two chunks");
+    let mut unsorted_rule_rows = rules_text
+        .lines()
+        .map(|t| t.parse::<Indexed>().expect("!"))
+        .collect::<Vec<_>>();
+
+    unsorted_rule_rows.sort_by(|a, b| a.0.cmp(&b.0));
+    let mut rule_rows = unsorted_rule_rows
+        .into_iter()
+        .map(|r| {
+            let text = r.1;
+            if let Ok(c) = text.parse::<MessageRuleChar>() {
+                MessageRule::Match(c.0)
+            } else {
+                let ors = text
+                    .split(" | ")
+                    .map(|refs| {
+                        refs.split(' ')
+                            .map(|n| n.parse::<usize>().expect("Index"))
+                            .collect::<Vec<_>>()
+                    })
+                    .collect::<Vec<_>>();
+                MessageRule::Ref(ors)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let mut rules = vec![None; rule_rows.len()];
+    collapse_rule(0, &rule_rows, &mut rules);
+
+    let rule_0 = &rules[0];
+    match rule_0 {
+        Some(rule) => messages
+            .lines()
+            .filter(|message| rule.contains(&message.to_string()))
+            .count(),
+        _ => panic!("There is no rule 0!"),
+    }
 }
 #[wasm_bindgen(js_name = "advent19Part2")]
 pub fn advent_19_part_2(input: String) -> u32 {
     println!("{}", input);
     1
 }
+
+#[test]
+fn test_part_1() {
+    let input = include_str!("./data.txt").to_string();
+    let before = std::time::Instant::now();
+    let result = advent_19_part_1(input);
+    let after = before.elapsed();
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 1)
+}
+
+#[test]
+fn test_part_2() {
+    let input = include_str!("./data.txt").to_string();
+    let before = std::time::Instant::now();
+    let result = advent_19_part_2(input);
+    let after = before.elapsed();
+    println!("{:?}", after.as_millis());
+    assert_eq!(result, 1)
+}
+
 #[wasm_bindgen(js_name = "advent20Part1")]
 pub fn advent_20_part_1(input: String) -> u32 {
     println!("{}", input);
